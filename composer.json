@@ -12,7 +12,7 @@
     "php": ">=7.1",
     "fond-of-spryker/price-list": "dev-master",
     "spryker/api": "^0.2.1",
-    "spryker/price-product": "^3.0.0"
+    "spryker/price-product": "^2.0.0"
   },
   "require-dev": {
     "codeception/codeception": "^2.4",

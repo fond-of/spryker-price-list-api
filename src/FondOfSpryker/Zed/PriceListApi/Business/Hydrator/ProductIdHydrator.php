@@ -33,7 +33,7 @@ class ProductIdHydrator implements ProductIdHydratorInterface
         }
 
         if ($priceProductTransfer->getIdProductAbstract() === null && $priceProductTransfer->getSkuProductAbstract() !== null) {
-            $idProduct = $this->productFacade->findProductConcreteIdBySku($priceProductTransfer->getSkuProduct());
+            $idProduct = $this->productFacade->findProductAbstractIdBySku($priceProductTransfer->getSkuProductAbstract());
             return $priceProductTransfer->setIdProductAbstract($idProduct);
         }
 

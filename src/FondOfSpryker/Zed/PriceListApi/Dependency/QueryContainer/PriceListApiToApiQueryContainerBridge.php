@@ -26,7 +26,7 @@ class PriceListApiToApiQueryContainerBridge implements PriceListApiToApiQueryCon
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function createApiItem(AbstractTransfer $data, ?$id = null): ApiItemTransfer
+    public function createApiItem(AbstractTransfer $data, ?int $id = null): ApiItemTransfer
     {
         return $this->apiQueryContainer->createApiItem($data, $id);
     }

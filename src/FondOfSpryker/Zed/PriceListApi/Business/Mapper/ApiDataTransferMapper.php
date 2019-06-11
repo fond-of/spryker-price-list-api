@@ -16,6 +16,6 @@ class ApiDataTransferMapper implements ApiDataTransferMapperInterface
     {
         $priceListTransfer = new PriceListApiTransfer();
 
-        return $priceListTransfer->fromArray($apiDataTransfer->getData());
+        return $priceListTransfer->fromArray($apiDataTransfer->getData(), true);
     }
 }

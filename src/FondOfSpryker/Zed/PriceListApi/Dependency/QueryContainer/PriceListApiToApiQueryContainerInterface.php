@@ -13,5 +13,5 @@ interface PriceListApiToApiQueryContainerInterface
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function createApiItem(AbstractTransfer $data, ?$id = null): ApiItemTransfer;
+    public function createApiItem(AbstractTransfer $data, ?int $id = null): ApiItemTransfer;
 }

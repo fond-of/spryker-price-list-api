@@ -86,7 +86,7 @@ class PriceListApi implements PriceListApiInterface
         $priceListApiTransfer = $this->apiDataTransferMapper->toPriceListApiTransfer($apiDataTransfer);
 
         $priceListTransfer = new PriceListTransfer();
-        $priceListTransfer->fromArray($priceListApiTransfer->toArray());
+        $priceListTransfer->fromArray($priceListApiTransfer->toArray(), true);
 
         return $this->persist($priceListTransfer, $priceListApiTransfer);
     }
@@ -108,7 +108,7 @@ class PriceListApi implements PriceListApiInterface
         }
 
         $priceListApiTransfer = $this->apiDataTransferMapper->toPriceListApiTransfer($apiDataTransfer);
-        $priceListTransfer->fromArray($priceListApiTransfer->toArray());
+        $priceListTransfer->fromArray($priceListApiTransfer->toArray(), true);
 
         return $this->persist($priceListTransfer, $priceListApiTransfer);
     }

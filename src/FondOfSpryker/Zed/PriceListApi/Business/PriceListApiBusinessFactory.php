@@ -4,8 +4,8 @@ namespace FondOfSpryker\Zed\PriceListApi\Business;
 
 use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\ProductIdHydrator;
 use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\ProductIdHydratorInterface;
-use FondOfSpryker\Zed\PriceListApi\Business\Mapper\ApiDataTransferMapper;
-use FondOfSpryker\Zed\PriceListApi\Business\Mapper\ApiDataTransferMapperInterface;
+use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapper;
+use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapperInterface;
 use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi;
 use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApiInterface;
 use FondOfSpryker\Zed\PriceListApi\Business\Validator\PriceListApiValidator;
@@ -13,6 +13,7 @@ use FondOfSpryker\Zed\PriceListApi\Business\Validator\PriceListApiValidatorInter
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToProductFacadeInterface;
+use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface;
 use FondOfSpryker\Zed\PriceListApi\PriceListApiDependencyProvider;
 use Propel\Runtime\Connection\ConnectionInterface;
@@ -20,6 +21,7 @@ use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
 
 /**
  * @method \FondOfSpryker\Zed\PriceListApi\PriceListApiConfig getConfig()
+ * @method \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface getQueryContainer()
  */
 class PriceListApiBusinessFactory extends AbstractBusinessFactory
 {
@@ -42,6 +44,8 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
             $this->getPriceProductPriceListFacade(),
             $this->createApiDataTransferMapper(),
             $this->getApiQueryContainer(),
+            $this->getApiQueryBuilderQueryContainer(),
+            $this->getQueryContainer(),
             $this->getPriceProductHydrationPlugins()
         );
     }
@@ -55,11 +59,11 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @return \FondOfSpryker\Zed\PriceListApi\Business\Mapper\ApiDataTransferMapperInterface
+     * @return \FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapperInterface
      */
-    protected function createApiDataTransferMapper(): ApiDataTransferMapperInterface
+    protected function createApiDataTransferMapper(): TransferMapperInterface
     {
-        return new ApiDataTransferMapper();
+        return new TransferMapper();
     }
 
     /**
@@ -120,5 +124,15 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     protected function getApiQueryContainer(): PriceListApiToApiQueryContainerInterface
     {
         return $this->getProvidedDependency(PriceListApiDependencyProvider::QUERY_CONTAINER_API);
+    }
+
+    /**
+     * @throws
+     *
+     * @return \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface
+     */
+    protected function getApiQueryBuilderQueryContainer(): PriceListApiToApiQueryBuilderQueryContainerInterface
+    {
+        return $this->getProvidedDependency(PriceListApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER);
     }
 }

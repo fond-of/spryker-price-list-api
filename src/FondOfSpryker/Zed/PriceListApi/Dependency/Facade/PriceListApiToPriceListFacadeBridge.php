@@ -39,4 +39,14 @@ class PriceListApiToPriceListFacadeBridge implements PriceListApiToPriceListFaca
     {
         return $this->priceListFacade->persistPriceList($priceListTransfer);
     }
+
+    /**
+     * @param \Generated\Shared\Transfer\PriceListTransfer $priceListTransfer
+     *
+     * @return \Generated\Shared\Transfer\PriceListTransfer|null
+     */
+    public function findPriceListById(PriceListTransfer $priceListTransfer): ?PriceListTransfer
+    {
+        return $this->priceListFacade->findPriceListById($priceListTransfer);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer;
 
+use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
 use Spryker\Shared\Kernel\Transfer\AbstractTransfer;
 
@@ -29,5 +30,15 @@ class PriceListApiToApiQueryContainerBridge implements PriceListApiToApiQueryCon
     public function createApiItem(AbstractTransfer $data, ?int $id = null): ApiItemTransfer
     {
         return $this->apiQueryContainer->createApiItem($data, $id);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return \Generated\Shared\Transfer\ApiCollectionTransfer
+     */
+    public function createApiCollection(array $data): ApiCollectionTransfer
+    {
+        return $this->apiQueryContainer->createApiCollection($data);
     }
 }

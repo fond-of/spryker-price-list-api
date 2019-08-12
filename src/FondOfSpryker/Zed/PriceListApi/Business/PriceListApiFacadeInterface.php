@@ -2,8 +2,10 @@
 
 namespace FondOfSpryker\Zed\PriceListApi\Business;
 
+use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
+use Generated\Shared\Transfer\ApiRequestTransfer;
 use Generated\Shared\Transfer\PriceProductTransfer;
 
 interface PriceListApiFacadeInterface
@@ -52,4 +54,29 @@ interface PriceListApiFacadeInterface
      * @return array
      */
     public function validate(ApiDataTransfer $apiDataTransfer): array;
+
+    /**
+     * Specification:
+     *  - Finds price list by price list ID.
+     *  - Throws PriceListNotFoundException if not found.
+     *
+     * @api
+     *
+     * @param int $idPriceList
+     *
+     * @return \Generated\Shared\Transfer\ApiItemTransfer
+     */
+    public function getPriceList(int $idPriceList): ApiItemTransfer;
+
+    /**
+     * Specification:
+     *  - Finds price lists by filter transfer, including sort, conditions and pagination.
+     *
+     * @api
+     *
+     * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer
+     *
+     * @return \Generated\Shared\Transfer\ApiCollectionTransfer
+     */
+    public function findPriceLists(ApiRequestTransfer $apiRequestTransfer): ApiCollectionTransfer;
 }

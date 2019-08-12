@@ -2,8 +2,10 @@
 
 namespace FondOfSpryker\Zed\PriceListApi\Business;
 
+use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
+use Generated\Shared\Transfer\ApiRequestTransfer;
 use Generated\Shared\Transfer\PriceProductTransfer;
 use Spryker\Zed\Kernel\Business\AbstractFacade;
 
@@ -53,6 +55,34 @@ class PriceListApiFacade extends AbstractFacade implements PriceListApiFacadeInt
     public function hydrateProductId(PriceProductTransfer $priceProductTransfer): PriceProductTransfer
     {
         return $this->getFactory()->createProductIdHydrator()->hydrate($priceProductTransfer);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     *
+     * @param int $idPriceList
+     *
+     * @return \Generated\Shared\Transfer\ApiItemTransfer
+     */
+    public function getPriceList(int $idPriceList): ApiItemTransfer
+    {
+        return $this->getFactory()->createProductListApi()->get($idPriceList);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     *
+     * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer
+     *
+     * @return \Generated\Shared\Transfer\ApiCollectionTransfer
+     */
+    public function findPriceLists(ApiRequestTransfer $apiRequestTransfer): ApiCollectionTransfer
+    {
+        return $this->getFactory()->createProductListApi()->find($apiRequestTransfer);
     }
 
     /**

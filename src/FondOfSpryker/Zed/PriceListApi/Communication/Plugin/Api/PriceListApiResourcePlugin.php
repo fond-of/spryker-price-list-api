@@ -15,6 +15,7 @@ use Spryker\Zed\Kernel\Communication\AbstractPlugin;
 /**
  * @method \FondOfSpryker\Zed\PriceListApi\PriceListApiConfig getConfig()
  * @method \FondOfSpryker\Zed\PriceListApi\Business\PriceListApiFacadeInterface getFacade()
+ * @method \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface getQueryContainer()
  */
 class PriceListApiResourcePlugin extends AbstractPlugin implements ApiResourcePluginInterface
 {
@@ -51,7 +52,7 @@ class PriceListApiResourcePlugin extends AbstractPlugin implements ApiResourcePl
      */
     public function get($id): ApiItemTransfer
     {
-        throw new ApiDispatchingException('Get action is not implemented yet.', ApiConfig::HTTP_CODE_NOT_FOUND);
+        return $this->getFacade()->getPriceList($id);
     }
 
     /**
@@ -92,6 +93,6 @@ class PriceListApiResourcePlugin extends AbstractPlugin implements ApiResourcePl
      */
     public function find(ApiRequestTransfer $apiRequestTransfer): ApiCollectionTransfer
     {
-        throw new ApiDispatchingException('Find action is not implemented yet.', ApiConfig::HTTP_CODE_NOT_FOUND);
+        return $this->getFacade()->findPriceLists($apiRequestTransfer);
     }
 }

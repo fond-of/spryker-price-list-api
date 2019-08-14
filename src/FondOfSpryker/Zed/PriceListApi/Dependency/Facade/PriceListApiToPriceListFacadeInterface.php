@@ -25,5 +25,12 @@ interface PriceListApiToPriceListFacadeInterface
      *
      * @return \Generated\Shared\Transfer\PriceListTransfer
      */
-    public function persistPriceList(PriceListTransfer $priceListTransfer): PriceListTransfer;
+    public function createPriceList(PriceListTransfer $priceListTransfer): PriceListTransfer;
+
+    /**
+     * @param \Generated\Shared\Transfer\PriceListTransfer $priceListTransfer
+     *
+     * @return \Generated\Shared\Transfer\PriceListTransfer
+     */
+    public function updatePriceList(PriceListTransfer $priceListTransfer): PriceListTransfer;
 }

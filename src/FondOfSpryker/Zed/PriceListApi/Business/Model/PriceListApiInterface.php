@@ -17,12 +17,12 @@ interface PriceListApiInterface
     public function add(ApiDataTransfer $apiDataTransfer): ApiItemTransfer;
 
     /**
-     * @param string $id
+     * @param string|int $id
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function update(string $id, ApiDataTransfer $apiDataTransfer): ApiItemTransfer;
+    public function update(int $id, ApiDataTransfer $apiDataTransfer): ApiItemTransfer;
 
     /**
      * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer

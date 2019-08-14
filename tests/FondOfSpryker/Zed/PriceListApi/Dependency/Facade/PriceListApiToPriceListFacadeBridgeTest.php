@@ -3,15 +3,15 @@
 namespace FondOfSpryker\Zed\PriceListApi\Dependency\Facade;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\PriceList\Business\PriceListFacadeInterface;
+use FondOfSpryker\Zed\PriceList\Business\PriceListFacade;
 use Generated\Shared\Transfer\PriceListTransfer;
 
 class PriceListApiToPriceListFacadeBridgeTest extends Unit
 {
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceList\Business\PriceListFacadeInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceList\Business\PriceListFacade
      */
-    protected $priceListFacadeInterfaceMock;
+    protected $priceListFacadeMock;
 
     /**
      * @var \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeBridge
@@ -30,7 +30,7 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
     {
         parent::_before();
 
-        $this->priceListFacadeInterfaceMock = $this->getMockBuilder(PriceListFacadeInterface::class)
+        $this->priceListFacadeMock = $this->getMockBuilder(PriceListFacade::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -38,7 +38,7 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->priceListApiToPriceListFacadeBridge = new PriceListApiToPriceListFacadeBridge($this->priceListFacadeInterfaceMock);
+        $this->priceListApiToPriceListFacadeBridge = new PriceListApiToPriceListFacadeBridge($this->priceListFacadeMock);
     }
 
     /**
@@ -46,7 +46,7 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
      */
     public function testFindPriceListByName(): void
     {
-        $this->priceListFacadeInterfaceMock->expects($this->atLeastOnce())
+        $this->priceListFacadeMock->expects($this->atLeastOnce())
             ->method('findPriceListByName')
             ->with($this->priceListTransferMock)
             ->willReturn($this->priceListTransferMock);
@@ -57,14 +57,27 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
     /**
      * @return void
      */
-    public function testPersistPriceList(): void
+    public function testCreatePriceList(): void
     {
-        $this->priceListFacadeInterfaceMock->expects($this->atLeastOnce())
-            ->method('persistPriceList')
+        $this->priceListFacadeMock->expects($this->atLeastOnce())
+            ->method('createPriceList')
             ->with($this->priceListTransferMock)
             ->willReturn($this->priceListTransferMock);
 
-        $this->assertInstanceOf(PriceListTransfer::class, $this->priceListApiToPriceListFacadeBridge->persistPriceList($this->priceListTransferMock));
+        $this->assertInstanceOf(PriceListTransfer::class, $this->priceListApiToPriceListFacadeBridge->createPriceList($this->priceListTransferMock));
+    }
+
+    /**
+     * @return void
+     */
+    public function testUpdatePriceList(): void
+    {
+        $this->priceListFacadeMock->expects($this->atLeastOnce())
+            ->method('updatePriceList')
+            ->with($this->priceListTransferMock)
+            ->willReturn($this->priceListTransferMock);
+
+        $this->assertInstanceOf(PriceListTransfer::class, $this->priceListApiToPriceListFacadeBridge->updatePriceList($this->priceListTransferMock));
     }
 
     /**
@@ -72,7 +85,7 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
      */
     public function testFindPriceListById(): void
     {
-        $this->priceListFacadeInterfaceMock->expects($this->atLeastOnce())
+        $this->priceListFacadeMock->expects($this->atLeastOnce())
             ->method('findPriceListById')
             ->with($this->priceListTransferMock)
             ->willReturn($this->priceListTransferMock);

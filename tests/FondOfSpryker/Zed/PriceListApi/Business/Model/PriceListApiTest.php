@@ -15,12 +15,17 @@ use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
 use Generated\Shared\Transfer\PriceListApiTransfer;
 use Generated\Shared\Transfer\PriceListTransfer;
+use Generated\Shared\Transfer\PriceProductDimensionTransfer;
 use Generated\Shared\Transfer\PriceProductTransfer;
 use Propel\Runtime\Connection\ConnectionInterface;
-use Spryker\Zed\Api\Business\Exception\EntityNotSavedException;
 
 class PriceListApiTest extends Unit
 {
+    /**
+     * @var \FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi
+     */
+    protected $priceListApi;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Propel\Runtime\Connection\ConnectionInterface
      */
@@ -57,11 +62,6 @@ class PriceListApiTest extends Unit
     protected $queryContainerMock;
 
     /**
-     * @var \FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi
-     */
-    protected $priceListApi;
-
-    /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiDataTransfer
      */
     protected $apiDataTransferMock;
@@ -72,39 +72,39 @@ class PriceListApiTest extends Unit
     protected $priceListApiTransferMock;
 
     /**
-     * @var array
-     */
-    protected $transferData;
-
-    /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\PriceListTransfer
      */
     protected $priceListTransferMock;
 
     /**
-     * @var string
-     */
-    private $skuProduct;
-
-    /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\PriceProductTransfer
      */
-    private $priceProductTransferMock;
+    protected $priceProductTransferMock;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiItemTransfer
+     */
+    protected $apiItemTransferMock;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\PriceProductDimensionTransfer
+     */
+    protected $priceProductDimensionTransferMock;
 
     /**
      * @var int
      */
-    private $idPriceList;
+    protected $idPriceList;
+
+    /**
+     * @var array
+     */
+    protected $transferData;
 
     /**
      * @var array
      */
     protected $priceProductHydrationPlugins;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $apiItemTransferMock;
 
     /**
      * @return void
@@ -161,11 +161,13 @@ class PriceListApiTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->priceProductDimensionTransferMock = $this->getMockBuilder(PriceProductDimensionTransfer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->priceProductHydrationPlugins = [];
 
         $this->idPriceList = 1;
-
-        $this->skuProduct = "Product-name";
 
         $this->transferData = ["name" => $this->priceProductTransferMock];
 
@@ -186,10 +188,6 @@ class PriceListApiTest extends Unit
      */
     public function testAddEntityNotSavedException(): void
     {
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
-            ->method('toArray')
-            ->willReturn($this->transferData);
-
         $this->transferMapperMock->expects($this->atLeastOnce())
             ->method('toTransfer')
             ->willReturn($this->priceListApiTransferMock);
@@ -203,8 +201,7 @@ class PriceListApiTest extends Unit
             ->willReturn(true);
 
         $this->priceListFacadeMock->expects($this->atLeastOnce())
-            ->method('persistPriceList')
-            ->withAnyParameters()
+            ->method('createPriceList')
             ->willThrowException(new Exception());
 
         $this->connectionMock->expects($this->atLeastOnce())
@@ -214,7 +211,7 @@ class PriceListApiTest extends Unit
         try {
             $this->priceListApi->add($this->apiDataTransferMock);
             $this->fail();
-        } catch (EntityNotSavedException $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -223,10 +220,6 @@ class PriceListApiTest extends Unit
      */
     public function testAdd(): void
     {
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
-            ->method('toArray')
-            ->willReturn($this->transferData);
-
         $this->transferMapperMock->expects($this->atLeastOnce())
             ->method('toTransfer')
             ->willReturn($this->priceListApiTransferMock);
@@ -239,22 +232,9 @@ class PriceListApiTest extends Unit
             ->method('beginTransaction')
             ->willReturn(true);
 
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
-            ->method('persistPriceList')
-            ->withAnyParameters()
-            ->willReturn($this->priceListTransferMock);
-
-        $this->connectionMock->expects($this->atLeastOnce())
-            ->method('commit')
-            ->willReturn(true);
-
         $this->priceListApiTransferMock->expects($this->atLeastOnce())
             ->method('getPriceListEntries')
-            ->willReturn([]);
-
-        $this->priceListTransferMock->expects($this->atLeastOnce())
-            ->method('getIdPriceList')
-            ->willReturn($this->idPriceList);
+            ->willReturn($this->priceProductHydrationPlugins);
 
         $this->apiQueryContainerMock->expects($this->atLeastOnce())
             ->method('createApiItem')
@@ -269,7 +249,7 @@ class PriceListApiTest extends Unit
     public function testUpdateEntityNotFoundException(): void
     {
         try {
-            $this->priceListApi->update($this->skuProduct, $this->apiDataTransferMock);
+            $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock);
             $this->fail();
         } catch (Exception $e) {
         }
@@ -280,32 +260,9 @@ class PriceListApiTest extends Unit
      */
     public function testUpdateEntityNotSavedException(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
-            ->method('findPriceListByName')
-            ->willReturn($this->priceListTransferMock);
-
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
-            ->method('toArray')
-            ->willReturn($this->transferData);
-
-        $this->transferMapperMock->expects($this->atLeastOnce())
-            ->method('toTransfer')
-            ->willReturn($this->priceListApiTransferMock);
-
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
-            ->method('toArray')
-            ->willReturn($this->transferData);
-
-        $this->priceListTransferMock->expects($this->atLeastOnce())
-            ->method('fromArray')
-            ->willReturn(true);
-
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
-            ->method('getPriceListEntries')
-            ->willReturn($this->transferData);
-
         try {
-            $this->priceListApi->update($this->skuProduct, $this->apiDataTransferMock);
+            $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock);
+            $this->fail();
         } catch (Exception $e) {
         }
     }
@@ -313,15 +270,60 @@ class PriceListApiTest extends Unit
     /**
      * @return void
      */
-    public function testUpdate(): void
+    public function testUpdatePriceListEntityNotSavedException(): void
     {
         $this->priceListFacadeMock->expects($this->atLeastOnce())
-            ->method('findPriceListByName')
+            ->method('findPriceListById')
             ->willReturn($this->priceListTransferMock);
 
         $this->apiDataTransferMock->expects($this->atLeastOnce())
+            ->method('getData')
+            ->willReturn([]);
+
+        $this->transferMapperMock->expects($this->atLeastOnce())
+            ->method('toTransfer')
+            ->willReturn($this->priceListApiTransferMock);
+
+        $this->priceListApiTransferMock->expects($this->atLeastOnce())
             ->method('toArray')
             ->willReturn($this->transferData);
+
+        $this->priceListTransferMock->expects($this->atLeastOnce())
+            ->method('fromArray')
+            ->willReturn(true);
+
+        $this->connectionMock->expects($this->atLeastOnce())
+            ->method('beginTransaction')
+            ->willReturn(true);
+
+        $this->priceListFacadeMock->expects($this->atLeastOnce())
+            ->method('updatePriceList')
+            ->with($this->priceListTransferMock)
+            ->willThrowException(new Exception());
+
+        $this->connectionMock->expects($this->atLeastOnce())
+            ->method('rollBack')
+            ->willReturn(true);
+
+        try {
+            $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock);
+            $this->fail();
+        } catch (Exception $e) {
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function testUpdatePersistPriceListEntriesEntityNotSavedException(): void
+    {
+        $this->priceListFacadeMock->expects($this->atLeastOnce())
+            ->method('findPriceListById')
+            ->willReturn($this->priceListTransferMock);
+
+        $this->apiDataTransferMock->expects($this->atLeastOnce())
+            ->method('getData')
+            ->willReturn([]);
 
         $this->transferMapperMock->expects($this->atLeastOnce())
             ->method('toTransfer')
@@ -337,9 +339,17 @@ class PriceListApiTest extends Unit
 
         $this->priceListApiTransferMock->expects($this->atLeastOnce())
             ->method('getPriceListEntries')
-            ->willReturn([]);
+            ->willReturn($this->transferData);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApi->update($this->skuProduct, $this->apiDataTransferMock));
+        $this->priceProductTransferMock->expects($this->atLeast(2))
+            ->method('getPriceDimension')
+            ->willReturn($this->priceProductDimensionTransferMock);
+
+        try {
+            $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock);
+            $this->fail();
+        } catch (Exception $e) {
+        }
     }
 
     /**

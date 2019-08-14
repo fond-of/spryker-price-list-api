@@ -114,34 +114,87 @@ class PriceListApi implements PriceListApiInterface
      */
     public function add(ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
-        $priceListApiTransfer = $this->transferMapper->toTransfer($apiDataTransfer->toArray());
+        $data = (array)$apiDataTransfer->getData();
+        $priceListApiTransfer = $this->transferMapper->toTransfer($data);
 
         $priceListTransfer = new PriceListTransfer();
         $priceListTransfer->fromArray($priceListApiTransfer->toArray(), true);
 
-        return $this->persist($priceListTransfer, $priceListApiTransfer);
+        $priceListTransfer = $this->addPriceList($priceListTransfer);
+
+        return $this->persistPriceListEntries($priceListTransfer, $priceListApiTransfer);
     }
 
     /**
-     * @param string $id
+     * @param \Generated\Shared\Transfer\PriceListTransfer $priceListTransfer
+     *
+     * @throws \Spryker\Zed\Api\Business\Exception\EntityNotSavedException
+     *
+     * @return \Generated\Shared\Transfer\PriceListTransfer
+     */
+    protected function addPriceList(PriceListTransfer $priceListTransfer): PriceListTransfer
+    {
+        $this->connection->beginTransaction();
+
+        try {
+            $priceListTransfer = $this->priceListFacade->createPriceList($priceListTransfer);
+        } catch (Throwable $throwable) {
+            $this->connection->rollBack();
+            throw new EntityNotSavedException(sprintf('Could not save price list: %s', $throwable->getMessage()), ApiConfig::HTTP_CODE_INTERNAL_ERROR);
+        }
+
+        $this->connection->commit();
+
+        return $priceListTransfer;
+    }
+
+    /**
+     * @param int $id
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @throws \Spryker\Zed\Api\Business\Exception\EntityNotFoundException
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function update(string $id, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
+    public function update(int $id, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
-        $priceListTransfer = $this->getByName($id);
+        $priceListTransfer = $this->getByIdPriceList($id);
 
         if ($priceListTransfer === null) {
-            throw new EntityNotFoundException(sprintf('Price list not found: %s', $id));
+            throw new EntityNotFoundException(sprintf('price list not found: %s', $id));
         }
 
-        $priceListApiTransfer = $this->transferMapper->toTransfer($apiDataTransfer->toArray());
+        $data = (array)$apiDataTransfer->getData();
+        $priceListApiTransfer = $this->transferMapper->toTransfer($data);
+
         $priceListTransfer->fromArray($priceListApiTransfer->toArray(), true);
 
-        return $this->persist($priceListTransfer, $priceListApiTransfer);
+        $priceListTransfer = $this->updatePriceList($priceListTransfer);
+
+        return $this->persistPriceListEntries($priceListTransfer, $priceListApiTransfer);
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\PriceListTransfer $priceListTransfer
+     *
+     * @throws \Spryker\Zed\Api\Business\Exception\EntityNotSavedException
+     *
+     * @return \Generated\Shared\Transfer\PriceListTransfer
+     */
+    protected function updatePriceList(PriceListTransfer $priceListTransfer): PriceListTransfer
+    {
+        $this->connection->beginTransaction();
+
+        try {
+            $priceListTransfer = $this->priceListFacade->updatePriceList($priceListTransfer);
+        } catch (Throwable $throwable) {
+            $this->connection->rollBack();
+            throw new EntityNotSavedException(sprintf('Could not save price list: %s', $throwable->getMessage()), ApiConfig::HTTP_CODE_INTERNAL_ERROR);
+        }
+
+        $this->connection->commit();
+
+        return $priceListTransfer;
     }
 
     /**
@@ -153,17 +206,15 @@ class PriceListApi implements PriceListApiInterface
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    protected function persist(
+    protected function persistPriceListEntries(
         PriceListTransfer $priceListTransfer,
         PriceListApiTransfer $priceListApiTransfer
     ): ApiItemTransfer {
-        $priceListTransfer = $this->persistPriceList($priceListTransfer);
-
         $this->connection->beginTransaction();
 
         foreach ($priceListApiTransfer->getPriceListEntries() as $priceProductTransfer) {
             try {
-                $this->persistPriceProductTransfer($priceListTransfer, $priceProductTransfer);
+                $this->persistPriceProduct($priceListTransfer, $priceProductTransfer);
             } catch (Throwable $throwable) {
                 $this->connection->rollBack();
                 throw new EntityNotSavedException(sprintf('Could not save price list entries: %s', $throwable->getMessage()), ApiConfig::HTTP_CODE_INTERNAL_ERROR);
@@ -177,36 +228,13 @@ class PriceListApi implements PriceListApiInterface
 
     /**
      * @param \Generated\Shared\Transfer\PriceListTransfer $priceListTransfer
-     *
-     * @throws \Spryker\Zed\Api\Business\Exception\EntityNotSavedException
-     *
-     * @return \Generated\Shared\Transfer\PriceListTransfer
-     */
-    protected function persistPriceList(PriceListTransfer $priceListTransfer): PriceListTransfer
-    {
-        $this->connection->beginTransaction();
-
-        try {
-            $priceListTransfer = $this->priceListFacade->persistPriceList($priceListTransfer);
-        } catch (Throwable $throwable) {
-            $this->connection->rollBack();
-            throw new EntityNotSavedException(sprintf('Could not save price list: %s', $throwable->getMessage()), ApiConfig::HTTP_CODE_INTERNAL_ERROR);
-        }
-
-        $this->connection->commit();
-
-        return $priceListTransfer;
-    }
-
-    /**
-     * @param \Generated\Shared\Transfer\PriceListTransfer $priceListTransfer
      * @param \Generated\Shared\Transfer\PriceProductTransfer $priceProductTransfer
      *
      * @throws \FondOfSpryker\Zed\PriceListApi\Business\Exception\MissingPriceDimensionException
      *
      * @return \Generated\Shared\Transfer\PriceProductTransfer
      */
-    protected function persistPriceProductTransfer(
+    protected function persistPriceProduct(
         PriceListTransfer $priceListTransfer,
         PriceProductTransfer $priceProductTransfer
     ): PriceProductTransfer {
@@ -227,19 +255,6 @@ class PriceListApi implements PriceListApiInterface
         $this->priceProductPriceListFacade->savePriceProductPriceList($priceProductTransfer);
 
         return $priceProductTransfer;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return \Generated\Shared\Transfer\PriceListTransfer|null
-     */
-    protected function getByName(string $name): ?PriceListTransfer
-    {
-        $priceListTransfer = new PriceListTransfer();
-        $priceListTransfer->setName($name);
-
-        return $this->priceListFacade->findPriceListByName($priceListTransfer);
     }
 
     /**

@@ -35,9 +35,19 @@ class PriceListApiToPriceListFacadeBridge implements PriceListApiToPriceListFaca
      *
      * @return \Generated\Shared\Transfer\PriceListTransfer
      */
-    public function persistPriceList(PriceListTransfer $priceListTransfer): PriceListTransfer
+    public function createPriceList(PriceListTransfer $priceListTransfer): PriceListTransfer
     {
-        return $this->priceListFacade->persistPriceList($priceListTransfer);
+        return $this->priceListFacade->createPriceList($priceListTransfer);
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\PriceListTransfer $priceListTransfer
+     *
+     * @return \Generated\Shared\Transfer\PriceListTransfer
+     */
+    public function updatePriceList(PriceListTransfer $priceListTransfer): PriceListTransfer
+    {
+        return $this->priceListFacade->updatePriceList($priceListTransfer);
     }
 
     /**

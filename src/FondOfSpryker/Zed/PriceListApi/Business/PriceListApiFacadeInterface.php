@@ -23,17 +23,17 @@ interface PriceListApiFacadeInterface
 
     /**
      * Specification:
-     * - Finds price list by name.
+     * - Finds price list by id.
      * - Throws PriceListNotFoundException if not found.
      * - Update price list data.
      * - Persist prices per updated price list.
      *
-     * @param string $id
+     * @param int $id
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function updatePriceList(string $id, ApiDataTransfer $apiDataTransfer): ApiItemTransfer;
+    public function updatePriceList(int $id, ApiDataTransfer $apiDataTransfer): ApiItemTransfer;
 
     /**
      * Specification:

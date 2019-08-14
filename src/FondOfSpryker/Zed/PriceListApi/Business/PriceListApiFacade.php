@@ -33,12 +33,12 @@ class PriceListApiFacade extends AbstractFacade implements PriceListApiFacadeInt
      *
      * @api
      *
-     * @param string $id
+     * @param int $id
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function updatePriceList(string $id, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
+    public function updatePriceList(int $id, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
         return $this->getFactory()->createProductListApi()->update($id, $apiDataTransfer);
     }

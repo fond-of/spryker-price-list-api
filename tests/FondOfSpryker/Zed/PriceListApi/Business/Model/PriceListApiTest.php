@@ -353,6 +353,48 @@ class PriceListApiTest extends Unit
     }
 
     /**
+     * @throws
+     *
+     * @return void
+     */
+    public function testUpdate(): void
+    {
+        $this->priceListFacadeMock->expects($this->atLeastOnce())
+            ->method('findPriceListById')
+            ->willReturn($this->priceListTransferMock);
+
+        $this->apiDataTransferMock->expects($this->atLeastOnce())
+            ->method('getData')
+            ->willReturn([]);
+
+        $this->transferMapperMock->expects($this->atLeastOnce())
+            ->method('toTransfer')
+            ->willReturn($this->priceListApiTransferMock);
+
+        $this->priceListApiTransferMock->expects($this->atLeastOnce())
+            ->method('toArray')
+            ->willReturn($this->transferData);
+
+        $this->priceListTransferMock->expects($this->atLeastOnce())
+            ->method('fromArray')
+            ->willReturn(true);
+
+        $this->priceListApiTransferMock->expects($this->atLeastOnce())
+            ->method('getPriceListEntries')
+            ->willReturn($this->transferData);
+
+        $this->priceProductTransferMock->expects($this->atLeast(2))
+            ->method('getPriceDimension')
+            ->willReturn($this->priceProductDimensionTransferMock);
+
+        $this->priceProductDimensionTransferMock->expects($this->atLeastOnce())
+            ->method('setIdPriceList')
+            ->willReturn($this->priceProductDimensionTransferMock);
+
+        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock));
+    }
+
+    /**
      * @return void
      */
     public function testGetEntityNotFoundException(): void
@@ -364,6 +406,8 @@ class PriceListApiTest extends Unit
     }
 
     /**
+     * @throws
+     *
      * @return void
      */
     public function testGet(): void

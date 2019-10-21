@@ -11,6 +11,7 @@
   "require": {
     "php": ">=7.1",
     "fond-of-spryker/price-list": "dev-master",
+    "fond-of-spryker/price-product-price-list": "dev-master",
     "spryker/api": "^0.2.1",
     "spryker/price-product": "^2.0.0 || ^4.0.0"
   },
@@ -31,7 +32,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "FondOfSpryker\\": "tests/FondOfSpryker/"
+      "FondOfSpryker\\": "tests/FondOfSpryker/",
+      "Generated\\":"src/Generated/"
     }
   }
 }

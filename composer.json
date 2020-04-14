@@ -12,7 +12,8 @@
     "php": ">=7.1",
     "fond-of-spryker/price-list": "dev-master",
     "fond-of-spryker/price-product-price-list": "dev-master",
-    "spryker/api": "^0.2.1",
+    "spryker/api": "^0.1.0 || ^0.2.0 || ^0.3.0",
+    "spryker/api-query-builder": "^0.1.0",
     "spryker/price-product": "^2.0.0 || ^4.0.0"
   },
   "require-dev": {

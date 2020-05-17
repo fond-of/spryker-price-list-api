@@ -28,8 +28,6 @@ class PriceListApiValidatorPlugin extends AbstractPlugin implements ApiValidator
      *
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
-     * @throws
-     *
      * @return \Generated\Shared\Transfer\ApiValidationErrorTransfer[]
      */
     public function validate(ApiDataTransfer $apiDataTransfer): array

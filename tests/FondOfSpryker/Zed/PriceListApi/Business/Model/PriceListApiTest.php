@@ -353,8 +353,6 @@ class PriceListApiTest extends Unit
     }
 
     /**
-     * @throws
-     *
      * @return void
      */
     public function testUpdate(): void
@@ -406,8 +404,6 @@ class PriceListApiTest extends Unit
     }
 
     /**
-     * @throws
-     *
      * @return void
      */
     public function testGet(): void

@@ -67,8 +67,6 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToProductFacadeInterface
      */
     protected function getProductFacade(): PriceListApiToProductFacadeInterface
@@ -77,8 +75,6 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface
      */
     protected function getPriceListFacade(): PriceListApiToPriceListFacadeInterface
@@ -87,8 +83,6 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface
      */
     protected function getPriceProductPriceListFacade(): PriceListApiToPriceProductPriceListFacadeInterface
@@ -97,8 +91,6 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductHydrationPluginInterface[]
      */
     protected function getPriceProductHydrationPlugins(): array
@@ -107,8 +99,6 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \Propel\Runtime\Connection\ConnectionInterface
      */
     protected function getPropelConnection(): ConnectionInterface
@@ -117,8 +107,6 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface
      */
     protected function getApiQueryContainer(): PriceListApiToApiQueryContainerInterface
@@ -127,8 +115,6 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface
      */
     protected function getApiQueryBuilderQueryContainer(): PriceListApiToApiQueryBuilderQueryContainerInterface

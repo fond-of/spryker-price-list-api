@@ -2,7 +2,6 @@
 
 namespace FondOfSpryker\Zed\PriceListApi\Persistence;
 
-use FondOfSpryker\Zed\CompanyApi\CompanyApiDependencyProvider;
 use FondOfSpryker\Zed\PriceListApi\PriceListApiDependencyProvider;
 use Orm\Zed\PriceList\Persistence\FosPriceListQuery;
 use Spryker\Zed\Kernel\Persistence\AbstractPersistenceFactory;

@@ -9,6 +9,7 @@ use Spryker\Zed\Kernel\Communication\AbstractPlugin;
 /**
  * @method \FondOfSpryker\Zed\PriceListApi\PriceListApiConfig getConfig()
  * @method \FondOfSpryker\Zed\PriceListApi\Business\PriceListApiFacadeInterface getFacade()
+ * @method \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface getQueryContainer()
  */
 class ProductIdHydrationPlugin extends AbstractPlugin implements PriceProductHydrationPluginInterface
 {

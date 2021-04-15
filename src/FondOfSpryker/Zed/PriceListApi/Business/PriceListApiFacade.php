@@ -48,13 +48,13 @@ class PriceListApiFacade extends AbstractFacade implements PriceListApiFacadeInt
      *
      * @api
      *
-     * @param \Generated\Shared\Transfer\PriceProductTransfer $priceProductTransfer
+     * @param \Generated\Shared\Transfer\PriceProductTransfer[] $priceProductTransfer
      *
-     * @return \Generated\Shared\Transfer\PriceProductTransfer
+     * @return \Generated\Shared\Transfer\PriceProductTransfer[]
      */
-    public function hydrateProductId(PriceProductTransfer $priceProductTransfer): PriceProductTransfer
+    public function hydratePriceProductsWithProductIds(array $priceProductTransfer): array
     {
-        return $this->getFactory()->createProductIdHydrator()->hydrate($priceProductTransfer);
+        return $this->getFactory()->createPriceProductsHydrator()->hydrate($priceProductTransfer);
     }
 
     /**

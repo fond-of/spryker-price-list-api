@@ -2,8 +2,8 @@
 
 namespace FondOfSpryker\Zed\PriceListApi\Business;
 
-use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\ProductIdHydrator;
-use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\ProductIdHydratorInterface;
+use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydrator;
+use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydratorInterface;
 use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapper;
 use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapperInterface;
 use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi;
@@ -22,15 +22,19 @@ use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
 /**
  * @method \FondOfSpryker\Zed\PriceListApi\PriceListApiConfig getConfig()
  * @method \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface getQueryContainer()
+ * @method \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiRepositoryInterface getRepository()
  */
 class PriceListApiBusinessFactory extends AbstractBusinessFactory
 {
     /**
-     * @return \FondOfSpryker\Zed\PriceListApi\Business\Hydrator\ProductIdHydratorInterface
+     * @return \FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydratorInterface
      */
-    public function createProductIdHydrator(): ProductIdHydratorInterface
+    public function createPriceProductsHydrator(): PriceProductsHydratorInterface
     {
-        return new ProductIdHydrator($this->getProductFacade());
+        return new PriceProductsHydrator(
+            $this->getProductFacade(),
+            $this->getRepository()
+        );
     }
 
     /**
@@ -46,7 +50,7 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
             $this->getApiQueryContainer(),
             $this->getApiQueryBuilderQueryContainer(),
             $this->getQueryContainer(),
-            $this->getPriceProductHydrationPlugins()
+            $this->getPriceProductsHydrationPlugins()
         );
     }
 
@@ -91,11 +95,11 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductHydrationPluginInterface[]
+     * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[]
      */
-    protected function getPriceProductHydrationPlugins(): array
+    protected function getPriceProductsHydrationPlugins(): array
     {
-        return $this->getProvidedDependency(PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCT_HYDRATION);
+        return $this->getProvidedDependency(PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION);
     }
 
     /**

@@ -1,10 +1,12 @@
 language: php
 
 php:
-  - 7.1
+  - 7.3
 
 env:
-  COMPOSER_MEMORY_LIMIT=-1
+  global:
+    - XDEBUG_MODE=coverage
+    - COMPOSER_MEMORY_LIMIT=-1
 
 cache:
   directories:
@@ -15,8 +17,5 @@ install:
   - composer install --no-interaction --prefer-dist
 
 script:
-  - vendor/bin/phpcs src --standard=vendor/spryker/code-sniffer/Spryker/ruleset.xml
+  - vendor/bin/phpcs --standard=vendor/spryker/code-sniffer/Spryker/ruleset.xml src
   - vendor/bin/codecept run --coverage-xml --env standalone
-
-after_success:
-  - vendor/bin/php-coveralls

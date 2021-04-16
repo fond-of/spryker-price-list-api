@@ -3,7 +3,7 @@
 namespace FondOfSpryker\Zed\PriceListApi\Dependency\Facade;
 
 use Codeception\Test\Unit;
-use Spryker\Zed\Product\Business\ProductFacade;
+use Spryker\Zed\Product\Business\ProductFacadeInterface;
 
 class PriceListApiToProductFacadeBridgeTest extends Unit
 {
@@ -13,19 +13,9 @@ class PriceListApiToProductFacadeBridgeTest extends Unit
     protected $priceListApiToProductFacadeBridge;
 
     /**
-     * @var string
-     */
-    protected $skuProduct;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Product\Business\ProductFacade
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Product\Business\ProductFacadeInterface
      */
     protected $productFacadeMock;
-
-    /**
-     * @var int
-     */
-    protected $idProduct;
 
     /**
      * @return void
@@ -34,13 +24,9 @@ class PriceListApiToProductFacadeBridgeTest extends Unit
     {
         parent::_before();
 
-        $this->productFacadeMock = $this->getMockBuilder(ProductFacade::class)
+        $this->productFacadeMock = $this->getMockBuilder(ProductFacadeInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->idProduct = 1;
-
-        $this->skuProduct = "SKU-Product";
 
         $this->priceListApiToProductFacadeBridge = new PriceListApiToProductFacadeBridge($this->productFacadeMock);
     }
@@ -48,26 +34,19 @@ class PriceListApiToProductFacadeBridgeTest extends Unit
     /**
      * @return void
      */
-    public function testFindProductAbstractIdBySku(): void
+    public function testGetProductConcreteIdsByConcreteSkus(): void
     {
-        $this->productFacadeMock->expects($this->atLeastOnce())
-            ->method('findProductAbstractIdBySku')
-            ->with($this->skuProduct)
-            ->willReturn($this->idProduct);
+        $skus = ['FOO-1'];
+        $productIds = ['FOO-1' => 1];
 
-        $this->assertSame($this->idProduct, $this->priceListApiToProductFacadeBridge->findProductAbstractIdBySku($this->skuProduct));
-    }
+        $this->productFacadeMock->expects(static::atLeastOnce())
+            ->method('getProductConcreteIdsByConcreteSkus')
+            ->with($skus)
+            ->willReturn($productIds);
 
-    /**
-     * @return void
-     */
-    public function testFindProductConcreteIdBySku(): void
-    {
-        $this->productFacadeMock->expects($this->atLeastOnce())
-            ->method('findProductConcreteIdBySku')
-            ->with($this->skuProduct)
-            ->willReturn($this->idProduct);
-
-        $this->assertSame($this->idProduct, $this->priceListApiToProductFacadeBridge->findProductConcreteIdBySku($this->skuProduct));
+        static::assertEquals(
+            $productIds,
+            $this->priceListApiToProductFacadeBridge->getProductConcreteIdsByConcreteSkus($skus)
+        );
     }
 }

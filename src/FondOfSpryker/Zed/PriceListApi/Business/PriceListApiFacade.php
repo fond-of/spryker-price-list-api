@@ -6,11 +6,11 @@ use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
 use Generated\Shared\Transfer\ApiRequestTransfer;
-use Generated\Shared\Transfer\PriceProductTransfer;
 use Spryker\Zed\Kernel\Business\AbstractFacade;
 
 /**
  * @method \FondOfSpryker\Zed\PriceListApi\Business\PriceListApiBusinessFactory getFactory()
+ * @method \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiRepositoryInterface getRepository()
  */
 class PriceListApiFacade extends AbstractFacade implements PriceListApiFacadeInterface
 {

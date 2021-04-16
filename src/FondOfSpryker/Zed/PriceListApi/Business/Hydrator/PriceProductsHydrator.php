@@ -114,6 +114,7 @@ class PriceProductsHydrator implements PriceProductsHydratorInterface
 
             if ($sku !== null && $priceProductTransfer->getIdProduct() === null) {
                 $groupedPriceProductTransfers[static::GROUPED_KEY_CONCRETE][$sku] = $priceProductTransfer;
+
                 continue;
             }
 

@@ -3,7 +3,7 @@
 namespace FondOfSpryker\Zed\PriceListApi\Business;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\ProductIdHydratorInterface;
+use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydratorInterface;
 use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi;
 use FondOfSpryker\Zed\PriceListApi\Business\Validator\PriceListApiValidatorInterface;
 use Generated\Shared\Transfer\ApiCollectionTransfer;
@@ -25,7 +25,7 @@ class PriceListApiFacadeTest extends Unit
     protected $apiDataTransferMock;
 
     /**
-     * @var \FondOfSpryker\Zed\PriceListApi\Business\PriceListApiBusinessFactory
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceListApi\Business\PriceListApiBusinessFactory
      */
     protected $priceListApiBusinessFactoryMock;
 
@@ -45,14 +45,14 @@ class PriceListApiFacadeTest extends Unit
     protected $idPriceList;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\PriceProductTransfer
+     * @var \PHPUnit\Framework\MockObject\MockObject[]|\Generated\Shared\Transfer\PriceProductTransfer[]
      */
-    protected $priceProductTransferMock;
+    protected $priceProductTransferMocks;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceListApi\Business\Hydrator\ProductIdHydratorInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydratorInterface
      */
-    protected $productIdHydratorInterfaceMock;
+    protected $priceProductsHydratorMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiRequestTransfer
@@ -92,11 +92,13 @@ class PriceListApiFacadeTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->priceProductTransferMock = $this->getMockBuilder(PriceProductTransfer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->priceProductTransferMocks = [
+            $this->getMockBuilder(PriceProductTransfer::class)
+                ->disableOriginalConstructor()
+                ->getMock(),
+        ];
 
-        $this->productIdHydratorInterfaceMock = $this->getMockBuilder(ProductIdHydratorInterface::class)
+        $this->priceProductsHydratorMock = $this->getMockBuilder(PriceProductsHydratorInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -123,16 +125,19 @@ class PriceListApiFacadeTest extends Unit
      */
     public function testAddPriceList(): void
     {
-        $this->priceListApiBusinessFactoryMock->expects($this->atLeastOnce())
+        $this->priceListApiBusinessFactoryMock->expects(static::atLeastOnce())
             ->method('createProductListApi')
             ->willReturn($this->priceListApiMock);
 
-        $this->priceListApiMock->expects($this->atLeastOnce())
+        $this->priceListApiMock->expects(static::atLeastOnce())
             ->method('add')
             ->with($this->apiDataTransferMock)
             ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApiFacade->addPriceList($this->apiDataTransferMock));
+        static::assertEquals(
+            $this->apiItemTransferMock,
+            $this->priceListApiFacade->addPriceList($this->apiDataTransferMock)
+        );
     }
 
     /**
@@ -140,16 +145,19 @@ class PriceListApiFacadeTest extends Unit
      */
     public function testUpdatePriceList(): void
     {
-        $this->priceListApiBusinessFactoryMock->expects($this->atLeastOnce())
+        $this->priceListApiBusinessFactoryMock->expects(static::atLeastOnce())
             ->method('createProductListApi')
             ->willReturn($this->priceListApiMock);
 
-        $this->priceListApiMock->expects($this->atLeastOnce())
+        $this->priceListApiMock->expects(static::atLeastOnce())
             ->method('update')
             ->with($this->idPriceList, $this->apiDataTransferMock)
             ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApiFacade->updatePriceList($this->idPriceList, $this->apiDataTransferMock));
+        static::assertEquals(
+            $this->apiItemTransferMock,
+            $this->priceListApiFacade->updatePriceList($this->idPriceList, $this->apiDataTransferMock)
+        );
     }
 
     /**
@@ -157,16 +165,21 @@ class PriceListApiFacadeTest extends Unit
      */
     public function testHydrateProductId(): void
     {
-        $this->priceListApiBusinessFactoryMock->expects($this->atLeastOnce())
-            ->method('createProductIdHydrator')
-            ->willReturn($this->productIdHydratorInterfaceMock);
+        $this->priceListApiBusinessFactoryMock->expects(static::atLeastOnce())
+            ->method('createPriceProductsHydrator')
+            ->willReturn($this->priceProductsHydratorMock);
 
-        $this->productIdHydratorInterfaceMock->expects($this->atLeastOnce())
+        $this->priceProductsHydratorMock->expects(static::atLeastOnce())
             ->method('hydrate')
-            ->with($this->priceProductTransferMock)
-            ->willReturn($this->priceProductTransferMock);
+            ->with($this->priceProductTransferMocks)
+            ->willReturn($this->priceProductTransferMocks);
 
-        $this->assertInstanceOf(PriceProductTransfer::class, $this->priceListApiFacade->hydrateProductId($this->priceProductTransferMock));
+        static::assertEquals(
+            $this->priceProductTransferMocks,
+            $this->priceListApiFacade->hydratePriceProductsWithProductIds(
+                $this->priceProductTransferMocks
+            )
+        );
     }
 
     /**
@@ -174,16 +187,16 @@ class PriceListApiFacadeTest extends Unit
      */
     public function testGetPriceList(): void
     {
-        $this->priceListApiBusinessFactoryMock->expects($this->atLeastOnce())
+        $this->priceListApiBusinessFactoryMock->expects(static::atLeastOnce())
             ->method('createProductListApi')
             ->willReturn($this->priceListApiMock);
 
-        $this->priceListApiMock->expects($this->atLeastOnce())
+        $this->priceListApiMock->expects(static::atLeastOnce())
             ->method('get')
             ->with($this->idPriceList)
             ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApiFacade->getPriceList($this->idPriceList));
+        static::assertInstanceOf(ApiItemTransfer::class, $this->priceListApiFacade->getPriceList($this->idPriceList));
     }
 
     /**
@@ -191,16 +204,16 @@ class PriceListApiFacadeTest extends Unit
      */
     public function testFindPriceLists(): void
     {
-        $this->priceListApiBusinessFactoryMock->expects($this->atLeastOnce())
+        $this->priceListApiBusinessFactoryMock->expects(static::atLeastOnce())
             ->method('createProductListApi')
             ->willReturn($this->priceListApiMock);
 
-        $this->priceListApiMock->expects($this->atLeastOnce())
+        $this->priceListApiMock->expects(static::atLeastOnce())
             ->method('find')
             ->with($this->apiRequestTransferMock)
             ->willReturn($this->apiCollectionTransferMock);
 
-        $this->assertInstanceOf(ApiCollectionTransfer::class, $this->priceListApiFacade->findPriceLists($this->apiRequestTransferMock));
+        static::assertInstanceOf(ApiCollectionTransfer::class, $this->priceListApiFacade->findPriceLists($this->apiRequestTransferMock));
     }
 
     /**
@@ -208,15 +221,14 @@ class PriceListApiFacadeTest extends Unit
      */
     public function testValidate(): void
     {
-
-        $this->priceListApiBusinessFactoryMock->expects($this->atLeastOnce())
+        $this->priceListApiBusinessFactoryMock->expects(static::atLeastOnce())
             ->method('createPriceListApiValidator')
             ->willReturn($this->priceListApiValidatorInterfaceMock);
 
-        $this->priceListApiValidatorInterfaceMock->expects($this->atLeastOnce())
+        $this->priceListApiValidatorInterfaceMock->expects(static::atLeastOnce())
             ->method('validate')
             ->willReturn([]);
 
-        $this->assertIsArray($this->priceListApiFacade->validate($this->apiDataTransferMock));
+        static::assertIsArray($this->priceListApiFacade->validate($this->apiDataTransferMock));
     }
 }

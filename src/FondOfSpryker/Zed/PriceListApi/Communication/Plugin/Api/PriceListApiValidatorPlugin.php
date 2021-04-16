@@ -10,6 +10,7 @@ use Spryker\Zed\Kernel\Communication\AbstractPlugin;
 /**
  * @method \FondOfSpryker\Zed\PriceListApi\PriceListApiConfig getConfig()
  * @method \FondOfSpryker\Zed\PriceListApi\Business\PriceListApiFacadeInterface getFacade()
+ * @method \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface getQueryContainer()
  */
 class PriceListApiValidatorPlugin extends AbstractPlugin implements ApiValidatorPluginInterface
 {
@@ -27,8 +28,6 @@ class PriceListApiValidatorPlugin extends AbstractPlugin implements ApiValidator
      * @api
      *
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
-     *
-     * @throws
      *
      * @return \Generated\Shared\Transfer\ApiValidationErrorTransfer[]
      */

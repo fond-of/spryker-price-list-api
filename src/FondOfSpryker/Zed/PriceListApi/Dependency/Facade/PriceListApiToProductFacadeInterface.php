@@ -5,16 +5,9 @@ namespace FondOfSpryker\Zed\PriceListApi\Dependency\Facade;
 interface PriceListApiToProductFacadeInterface
 {
     /**
-     * @param string $sku
+     * @param string[] $skus
      *
-     * @return int|null
+     * @return int[]
      */
-    public function findProductAbstractIdBySku(string $sku): ?int;
-
-    /**
-     * @param string $sku
-     *
-     * @return int|null
-     */
-    public function findProductConcreteIdBySku(string $sku): ?int;
+    public function getProductConcreteIdsByConcreteSkus(array $skus): array;
 }

@@ -6,7 +6,6 @@ use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
 use Generated\Shared\Transfer\ApiRequestTransfer;
-use Generated\Shared\Transfer\PriceProductTransfer;
 
 interface PriceListApiFacadeInterface
 {
@@ -37,13 +36,13 @@ interface PriceListApiFacadeInterface
 
     /**
      * Specification:
-     * - Hydrate price product with product id (sku is required)
+     * - Hydrate price products with product ids (sku is required)
      *
-     * @param \Generated\Shared\Transfer\PriceProductTransfer $priceProductTransfer
+     * @param \Generated\Shared\Transfer\PriceProductTransfer[] $priceProductTransfer
      *
-     * @return \Generated\Shared\Transfer\PriceProductTransfer
+     * @return \Generated\Shared\Transfer\PriceProductTransfer[]
      */
-    public function hydrateProductId(PriceProductTransfer $priceProductTransfer): PriceProductTransfer;
+    public function hydratePriceProductsWithProductIds(array $priceProductTransfer): array;
 
     /**
      * Specification:

@@ -1,10 +1,10 @@
 <?php
 
-
 namespace FondOfSpryker\Zed\PriceListApi\Business\Model;
 
 use Codeception\Test\Unit;
 use Exception;
+use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydratorInterface;
 use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapper;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;
@@ -17,15 +17,11 @@ use Generated\Shared\Transfer\PriceListApiTransfer;
 use Generated\Shared\Transfer\PriceListTransfer;
 use Generated\Shared\Transfer\PriceProductDimensionTransfer;
 use Generated\Shared\Transfer\PriceProductTransfer;
+use Laminas\Stdlib\ArrayObject;
 use Propel\Runtime\Connection\ConnectionInterface;
 
 class PriceListApiTest extends Unit
 {
-    /**
-     * @var \FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi
-     */
-    protected $priceListApi;
-
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Propel\Runtime\Connection\ConnectionInterface
      */
@@ -92,19 +88,14 @@ class PriceListApiTest extends Unit
     protected $priceProductDimensionTransferMock;
 
     /**
-     * @var int
+     * @var \PHPUnit\Framework\MockObject\MockObject[]|\FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[]
      */
-    protected $idPriceList;
+    protected $priceProductsHydrationPluginMocks;
 
     /**
-     * @var array
+     * @var \FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi
      */
-    protected $transferData;
-
-    /**
-     * @var array
-     */
-    protected $priceProductHydrationPlugins;
+    protected $priceListApi;
 
     /**
      * @return void
@@ -165,11 +156,11 @@ class PriceListApiTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->priceProductHydrationPlugins = [];
-
-        $this->idPriceList = 1;
-
-        $this->transferData = ["name" => $this->priceProductTransferMock];
+        $this->priceProductsHydrationPluginMocks = [
+            $this->getMockBuilder(PriceProductsHydratorInterface::class)
+                ->disableOriginalConstructor()
+                ->getMock(),
+        ];
 
         $this->priceListApi = new PriceListApi(
             $this->connectionMock,
@@ -179,7 +170,7 @@ class PriceListApiTest extends Unit
             $this->apiQueryContainerMock,
             $this->apiQueryBuilderQueryContainerMock,
             $this->queryContainerMock,
-            $this->priceProductHydrationPlugins
+            $this->priceProductsHydrationPluginMocks
         );
     }
 
@@ -188,29 +179,66 @@ class PriceListApiTest extends Unit
      */
     public function testAddEntityNotSavedException(): void
     {
-        $this->transferMapperMock->expects($this->atLeastOnce())
+        $data = [];
+
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
+            ->method('getData')
+            ->willReturn($data);
+
+        $this->transferMapperMock->expects(static::atLeastOnce())
             ->method('toTransfer')
+            ->with($data)
             ->willReturn($this->priceListApiTransferMock);
 
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
+        $this->priceListApiTransferMock->expects(static::atLeastOnce())
             ->method('toArray')
-            ->willReturn([]);
+            ->willReturn($data);
 
-        $this->connectionMock->expects($this->atLeastOnce())
+        $this->connectionMock->expects(static::atLeast(1))
             ->method('beginTransaction')
             ->willReturn(true);
 
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('createPriceList')
             ->willThrowException(new Exception());
 
-        $this->connectionMock->expects($this->atLeastOnce())
-            ->method('rollBack')
+        $this->connectionMock->expects(static::atLeastOnce())
+            ->method('rollback')
             ->willReturn(true);
+
+        $this->connectionMock->expects(static::never())
+            ->method('commit');
+
+        $this->priceListApiTransferMock->expects(static::never())
+            ->method('getPriceListEntries');
+
+        $this->priceProductsHydrationPluginMocks[0]->expects(static::never())
+            ->method('hydrate');
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getIdProductAbstract');
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getIdProduct');
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getPriceDimension');
+
+        $this->priceListTransferMock->expects(static::never())
+            ->method('getIdPriceList');
+
+        $this->priceProductDimensionTransferMock->expects(static::never())
+            ->method('setIdPriceList');
+
+        $this->priceProductPriceListFacadeMock->expects(static::never())
+            ->method('savePriceProductPriceList');
+
+        $this->apiQueryContainerMock->expects(static::never())
+            ->method('createApiItem');
 
         try {
             $this->priceListApi->add($this->apiDataTransferMock);
-            $this->fail();
+            static::fail();
         } catch (Exception $e) {
         }
     }
@@ -220,51 +248,75 @@ class PriceListApiTest extends Unit
      */
     public function testAdd(): void
     {
-        $this->transferMapperMock->expects($this->atLeastOnce())
+        $data = [];
+        $idProductAbstract = 1;
+        $idPriceList = 1;
+
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
+            ->method('getData')
+            ->willReturn($data);
+
+        $this->transferMapperMock->expects(static::atLeastOnce())
             ->method('toTransfer')
+            ->with($data)
             ->willReturn($this->priceListApiTransferMock);
 
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
+        $this->priceListApiTransferMock->expects(static::atLeastOnce())
             ->method('toArray')
-            ->willReturn([]);
+            ->willReturn($data);
 
-        $this->connectionMock->expects($this->atLeastOnce())
+        $this->connectionMock->expects(static::atLeast(2))
             ->method('beginTransaction')
             ->willReturn(true);
 
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
-            ->method('getPriceListEntries')
-            ->willReturn($this->priceProductHydrationPlugins);
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
+            ->method('createPriceList')
+            ->willReturn($this->priceListTransferMock);
 
-        $this->apiQueryContainerMock->expects($this->atLeastOnce())
+        $this->connectionMock->expects(static::atLeast(2))
+            ->method('commit')
+            ->willReturn(true);
+
+        $this->priceListApiTransferMock->expects(static::atLeastOnce())
+            ->method('getPriceListEntries')
+            ->willReturn(new ArrayObject([$this->priceProductTransferMock]));
+
+        $this->priceProductsHydrationPluginMocks[0]->expects(static::atLeastOnce())
+            ->method('hydrate')
+            ->with([$this->priceProductTransferMock])
+            ->willReturn([$this->priceProductTransferMock]);
+
+        $this->priceProductTransferMock->expects(static::atLeastOnce())
+            ->method('getIdProductAbstract')
+            ->willReturn($idProductAbstract);
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getIdProduct');
+
+        $this->priceProductTransferMock->expects(static::atLeastOnce())
+            ->method('getPriceDimension')
+            ->willReturn($this->priceProductDimensionTransferMock);
+
+        $this->priceListTransferMock->expects(static::atLeastOnce())
+            ->method('getIdPriceList')
+            ->willReturn($idPriceList);
+
+        $this->priceProductDimensionTransferMock->expects(static::atLeastOnce())
+            ->method('setIdPriceList')
+            ->with($idPriceList)
+            ->willReturn($this->priceProductDimensionTransferMock);
+
+        $this->priceProductPriceListFacadeMock->expects(static::atLeastOnce())
+            ->method('savePriceProductPriceList')
+            ->with($this->priceProductTransferMock)
+            ->willReturn($this->priceProductTransferMock);
+
+        $this->apiQueryContainerMock->expects(static::atLeastOnce())
             ->method('createApiItem')
+            ->with($this->priceListApiTransferMock, 1)
             ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApi->add($this->apiDataTransferMock));
-    }
-
-    /**
-     * @return void
-     */
-    public function testUpdateEntityNotFoundException(): void
-    {
-        try {
-            $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock);
-            $this->fail();
-        } catch (Exception $e) {
-        }
-    }
-
-    /**
-     * @return void
-     */
-    public function testUpdateEntityNotSavedException(): void
-    {
-        try {
-            $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock);
-            $this->fail();
-        } catch (Exception $e) {
-        }
+        static::assertEquals($this->apiItemTransferMock, $this->priceListApi->add($this->apiDataTransferMock));
     }
 
     /**
@@ -272,42 +324,83 @@ class PriceListApiTest extends Unit
      */
     public function testUpdatePriceListEntityNotSavedException(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $idPriceList = 1;
+        $data = [];
+
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('findPriceListById')
+            ->with(
+                static::callback(
+                    static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
+                        return $priceListTransfer->getIdPriceList() === $idPriceList;
+                    }
+                )
+            )
             ->willReturn($this->priceListTransferMock);
 
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
             ->method('getData')
-            ->willReturn([]);
+            ->willReturn($data);
 
-        $this->transferMapperMock->expects($this->atLeastOnce())
+        $this->transferMapperMock->expects(static::atLeastOnce())
             ->method('toTransfer')
             ->willReturn($this->priceListApiTransferMock);
 
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
+        $this->priceListApiTransferMock->expects(static::atLeastOnce())
             ->method('toArray')
-            ->willReturn($this->transferData);
+            ->willReturn($data);
 
-        $this->priceListTransferMock->expects($this->atLeastOnce())
+        $this->priceListTransferMock->expects(static::atLeastOnce())
             ->method('fromArray')
-            ->willReturn(true);
+            ->willReturn($this->priceListTransferMock);
 
-        $this->connectionMock->expects($this->atLeastOnce())
+        $this->priceListTransferMock->expects(static::atLeastOnce())
+            ->method('setIdPriceList')
+            ->with($idPriceList)
+            ->willReturn($this->priceListTransferMock);
+
+        $this->connectionMock->expects(static::atLeast(1))
             ->method('beginTransaction')
             ->willReturn(true);
 
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('updatePriceList')
             ->with($this->priceListTransferMock)
             ->willThrowException(new Exception());
 
-        $this->connectionMock->expects($this->atLeastOnce())
-            ->method('rollBack')
-            ->willReturn(true);
+        $this->connectionMock->expects(static::never())
+            ->method('commit');
+
+        $this->priceListApiTransferMock->expects(static::never())
+            ->method('getPriceListEntries');
+
+        $this->priceProductsHydrationPluginMocks[0]->expects(static::never())
+            ->method('hydrate');
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getIdProductAbstract');
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getIdProduct');
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getPriceDimension');
+
+        $this->priceListTransferMock->expects(static::never())
+            ->method('getIdPriceList');
+
+        $this->priceProductDimensionTransferMock->expects(static::never())
+            ->method('setIdPriceList');
+
+        $this->priceProductPriceListFacadeMock->expects(static::never())
+            ->method('savePriceProductPriceList');
+
+        $this->apiQueryContainerMock->expects(static::never())
+            ->method('createApiItem');
 
         try {
-            $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock);
-            $this->fail();
+            $this->priceListApi->update($idPriceList, $this->apiDataTransferMock);
+            static::fail();
         } catch (Exception $e) {
         }
     }
@@ -315,83 +408,203 @@ class PriceListApiTest extends Unit
     /**
      * @return void
      */
-    public function testUpdatePersistPriceListEntriesEntityNotSavedException(): void
+    public function testUpdateWithErrorBySavingPriceProductPriceList(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $idPriceList = 1;
+        $idProductAbstract = 1;
+        $data = [];
+
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('findPriceListById')
+            ->with(
+                static::callback(
+                    static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
+                        return $priceListTransfer->getIdPriceList() === $idPriceList;
+                    }
+                )
+            )
             ->willReturn($this->priceListTransferMock);
 
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
             ->method('getData')
-            ->willReturn([]);
+            ->willReturn($data);
 
-        $this->transferMapperMock->expects($this->atLeastOnce())
+        $this->transferMapperMock->expects(static::atLeastOnce())
             ->method('toTransfer')
             ->willReturn($this->priceListApiTransferMock);
 
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
+        $this->priceListApiTransferMock->expects(static::atLeastOnce())
             ->method('toArray')
-            ->willReturn($this->transferData);
+            ->willReturn($data);
 
-        $this->priceListTransferMock->expects($this->atLeastOnce())
+        $this->priceListTransferMock->expects(static::atLeastOnce())
             ->method('fromArray')
+            ->willReturn($this->priceListTransferMock);
+
+        $this->priceListTransferMock->expects(static::atLeastOnce())
+            ->method('setIdPriceList')
+            ->with($idPriceList)
+            ->willReturn($this->priceListTransferMock);
+
+        $this->connectionMock->expects(static::atLeast(2))
+            ->method('beginTransaction')
             ->willReturn(true);
 
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
-            ->method('getPriceListEntries')
-            ->willReturn($this->transferData);
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
+            ->method('updatePriceList')
+            ->with($this->priceListTransferMock)
+            ->willReturn($this->priceListTransferMock);
 
-        $this->priceProductTransferMock->expects($this->atLeast(2))
+        $this->connectionMock->expects(static::once())
+            ->method('commit')
+            ->willReturn(true);
+
+        $this->priceListApiTransferMock->expects(static::atLeastOnce())
+            ->method('getPriceListEntries')
+            ->willReturn(new ArrayObject([$this->priceProductTransferMock]));
+
+        $this->priceProductsHydrationPluginMocks[0]->expects(static::atLeastOnce())
+            ->method('hydrate')
+            ->with([$this->priceProductTransferMock])
+            ->willReturn([$this->priceProductTransferMock]);
+
+        $this->priceProductTransferMock->expects(static::atLeastOnce())
             ->method('getPriceDimension')
             ->willReturn($this->priceProductDimensionTransferMock);
 
+        $this->priceProductTransferMock->expects(static::atLeastOnce())
+            ->method('getIdProductAbstract')
+            ->willReturn($idProductAbstract);
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getIdProduct');
+
+        $this->priceListTransferMock->expects(static::atLeastOnce())
+            ->method('getIdPriceList')
+            ->willReturn($idPriceList);
+
+        $this->priceProductDimensionTransferMock->expects(static::atLeastOnce())
+            ->method('setIdPriceList')
+            ->with($idPriceList)
+            ->willReturn($this->priceProductDimensionTransferMock);
+
+        $this->priceProductPriceListFacadeMock->expects(static::atLeastOnce())
+            ->method('savePriceProductPriceList')
+            ->with($this->priceProductTransferMock)
+            ->willThrowException(new Exception());
+
+        $this->connectionMock->expects(static::atLeastOnce())
+            ->method('rollback')
+            ->willReturn(true);
+
+        $this->apiQueryContainerMock->expects(static::never())
+            ->method('createApiItem')
+            ->with($this->priceListApiTransferMock, $idPriceList)
+            ->willReturn($this->apiItemTransferMock);
+
         try {
-            $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock);
-            $this->fail();
+            $this->priceListApi->update($idPriceList, $this->apiDataTransferMock);
+            static::fail();
         } catch (Exception $e) {
         }
     }
 
     /**
-     * @throws
-     *
      * @return void
      */
     public function testUpdate(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $idPriceList = 1;
+        $idProductAbstract = 1;
+        $data = [];
+
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('findPriceListById')
-            ->willReturn($this->priceListTransferMock);
+            ->with(
+                static::callback(
+                    static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
+                        return $priceListTransfer->getIdPriceList() === $idPriceList;
+                    }
+                )
+            )->willReturn($this->priceListTransferMock);
 
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
             ->method('getData')
-            ->willReturn([]);
+            ->willReturn($data);
 
-        $this->transferMapperMock->expects($this->atLeastOnce())
+        $this->transferMapperMock->expects(static::atLeastOnce())
             ->method('toTransfer')
             ->willReturn($this->priceListApiTransferMock);
 
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
+        $this->priceListApiTransferMock->expects(static::atLeastOnce())
             ->method('toArray')
-            ->willReturn($this->transferData);
+            ->willReturn($data);
 
-        $this->priceListTransferMock->expects($this->atLeastOnce())
+        $this->priceListTransferMock->expects(static::atLeastOnce())
             ->method('fromArray')
+            ->willReturn($this->priceListTransferMock);
+
+        $this->priceListTransferMock->expects(static::atLeastOnce())
+            ->method('setIdPriceList')
+            ->with($idPriceList)
+            ->willReturn($this->priceListTransferMock);
+
+        $this->connectionMock->expects(static::atLeast(2))
+            ->method('beginTransaction')
             ->willReturn(true);
 
-        $this->priceListApiTransferMock->expects($this->atLeastOnce())
-            ->method('getPriceListEntries')
-            ->willReturn($this->transferData);
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
+            ->method('updatePriceList')
+            ->with($this->priceListTransferMock)
+            ->willReturn($this->priceListTransferMock);
 
-        $this->priceProductTransferMock->expects($this->atLeast(2))
+        $this->connectionMock->expects(static::atLeast(2))
+            ->method('commit')
+            ->willReturn(true);
+
+        $this->priceListApiTransferMock->expects(static::atLeastOnce())
+            ->method('getPriceListEntries')
+            ->willReturn(new ArrayObject([$this->priceProductTransferMock]));
+
+        $this->priceProductsHydrationPluginMocks[0]->expects(static::atLeastOnce())
+            ->method('hydrate')
+            ->with([$this->priceProductTransferMock])
+            ->willReturn([$this->priceProductTransferMock]);
+
+        $this->priceProductTransferMock->expects(static::atLeastOnce())
+            ->method('getIdProductAbstract')
+            ->willReturn($idProductAbstract);
+
+        $this->priceProductTransferMock->expects(static::never())
+            ->method('getIdProduct');
+
+        $this->priceProductTransferMock->expects(static::atLeastOnce())
             ->method('getPriceDimension')
             ->willReturn($this->priceProductDimensionTransferMock);
 
-        $this->priceProductDimensionTransferMock->expects($this->atLeastOnce())
+        $this->priceListTransferMock->expects(static::atLeastOnce())
+            ->method('getIdPriceList')
+            ->willReturn($idPriceList);
+
+        $this->priceProductDimensionTransferMock->expects(static::atLeastOnce())
             ->method('setIdPriceList')
+            ->with($idPriceList)
             ->willReturn($this->priceProductDimensionTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApi->update($this->idPriceList, $this->apiDataTransferMock));
+        $this->priceProductPriceListFacadeMock->expects(static::atLeastOnce())
+            ->method('savePriceProductPriceList')
+            ->with($this->priceProductTransferMock)
+            ->willReturn($this->priceProductTransferMock);
+
+        $this->apiQueryContainerMock->expects(static::atLeastOnce())
+            ->method('createApiItem')
+            ->with($this->priceListApiTransferMock, 1)
+            ->willReturn($this->apiItemTransferMock);
+
+        static::assertEquals(
+            $this->apiItemTransferMock,
+            $this->priceListApi->update($idPriceList, $this->apiDataTransferMock)
+        );
     }
 
     /**
@@ -399,23 +612,46 @@ class PriceListApiTest extends Unit
      */
     public function testGetEntityNotFoundException(): void
     {
+        $idPriceList = 1;
+
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
+            ->method('findPriceListById')
+            ->with(
+                static::callback(
+                    static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
+                        return $priceListTransfer->getIdPriceList() === $idPriceList;
+                    }
+                )
+            )->willReturn(null);
+
         try {
-            $this->priceListApi->get($this->idPriceList);
+            $this->priceListApi->get($idPriceList);
         } catch (Exception $e) {
         }
     }
 
     /**
-     * @throws
-     *
      * @return void
      */
     public function testGet(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
-            ->method('findPriceListById')
-            ->willReturn($this->priceListTransferMock);
+        $idPriceList = 1;
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApi->get($this->idPriceList));
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
+            ->method('findPriceListById')
+            ->with(
+                static::callback(
+                    static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
+                        return $priceListTransfer->getIdPriceList() === $idPriceList;
+                    }
+                )
+            )->willReturn($this->priceListTransferMock);
+
+        $this->apiQueryContainerMock->expects(static::atLeastOnce())
+            ->method('createApiItem')
+            ->with($this->priceListTransferMock, $idPriceList)
+            ->willReturn($this->apiItemTransferMock);
+
+        static::assertEquals($this->apiItemTransferMock, $this->priceListApi->get($idPriceList));
     }
 }

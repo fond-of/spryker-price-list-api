@@ -22,6 +22,7 @@ class PriceProductsHydrator implements PriceProductsHydratorInterface
 
     /**
      * @param \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToProductFacadeInterface $productFacade
+     * @param \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiRepositoryInterface $repository
      */
     public function __construct(
         PriceListApiToProductFacadeInterface $productFacade,

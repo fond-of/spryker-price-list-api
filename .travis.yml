@@ -4,7 +4,9 @@ php:
   - 7.3
 
 env:
-  COMPOSER_MEMORY_LIMIT=-1
+  global:
+    - XDEBUG_MODE=coverage
+    - COMPOSER_MEMORY_LIMIT=-1
 
 cache:
   directories:

@@ -44,9 +44,7 @@ class PriceListApiResourcePlugin extends AbstractPlugin implements ApiResourcePl
     /**
      * @api
      *
-     * @param string $id
-     *
-     * @throws
+     * @param int $id
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
@@ -58,7 +56,7 @@ class PriceListApiResourcePlugin extends AbstractPlugin implements ApiResourcePl
     /**
      * @api
      *
-     * @param string $id
+     * @param int $id
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
@@ -71,9 +69,7 @@ class PriceListApiResourcePlugin extends AbstractPlugin implements ApiResourcePl
     /**
      * @api
      *
-     * @param string $id
-     *
-     * @throws
+     * @param int $id
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
@@ -86,8 +82,6 @@ class PriceListApiResourcePlugin extends AbstractPlugin implements ApiResourcePl
      * @api
      *
      * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer
-     *
-     * @throws
      *
      * @return \Generated\Shared\Transfer\ApiCollectionTransfer
      */

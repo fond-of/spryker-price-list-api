@@ -3,15 +3,16 @@
 namespace FondOfSpryker\Zed\PriceListApi\Business;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\ProductIdHydratorInterface;
-use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApiInterface;
-use FondOfSpryker\Zed\PriceListApi\Business\Validator\PriceListApiValidatorInterface;
+use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydrator;
+use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi;
+use FondOfSpryker\Zed\PriceListApi\Business\Validator\PriceListApiValidator;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToProductFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerBridge;
 use FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainer;
+use FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiRepository;
 use FondOfSpryker\Zed\PriceListApi\PriceListApiDependencyProvider;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Spryker\Zed\Kernel\Container;
@@ -69,6 +70,11 @@ class PriceListApiBusinessFactoryTest extends Unit
     protected $queryContainerMock;
 
     /**
+     * @var \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiRepositoryInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $repositoryMock;
+
+    /**
      * @return void
      */
     protected function _before(): void
@@ -107,30 +113,38 @@ class PriceListApiBusinessFactoryTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->repositoryMock = $this->getMockBuilder(PriceListApiRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->priceProductHydrationPlugins = [];
 
         $this->priceListApiBusinessFactory = new PriceListApiBusinessFactory();
 
         $this->priceListApiBusinessFactory->setContainer($this->containerMock);
+        $this->priceListApiBusinessFactory->setRepository($this->repositoryMock);
         $this->priceListApiBusinessFactory->setQueryContainer($this->queryContainerMock);
     }
 
     /**
      * @return void
      */
-    public function testGetProductIdHydrator(): void
+    public function testCreatePriceProductsHydrator(): void
     {
-        $this->containerMock->expects($this->atLeastOnce())
+        $this->containerMock->expects(static::atLeastOnce())
             ->method('has')
             ->with(PriceListApiDependencyProvider::FACADE_PRODUCT)
             ->willReturn(true);
 
-        $this->containerMock->expects($this->atLeastOnce())
+        $this->containerMock->expects(static::atLeastOnce())
             ->method('get')
             ->with(PriceListApiDependencyProvider::FACADE_PRODUCT)
             ->willReturn($this->priceListApiToProductFacadeInterfaceMock);
 
-        $this->assertInstanceOf(ProductIdHydratorInterface::class, $this->priceListApiBusinessFactory->createProductIdHydrator());
+        static::assertInstanceOf(
+            PriceProductsHydrator::class,
+            $this->priceListApiBusinessFactory->createPriceProductsHydrator()
+        );
     }
 
     /**
@@ -138,7 +152,10 @@ class PriceListApiBusinessFactoryTest extends Unit
      */
     public function testPriceListApiValidator(): void
     {
-        $this->assertInstanceOf(PriceListApiValidatorInterface::class, $this->priceListApiBusinessFactory->createPriceListApiValidator());
+        static::assertInstanceOf(
+            PriceListApiValidator::class,
+            $this->priceListApiBusinessFactory->createPriceListApiValidator()
+        );
     }
 
     /**
@@ -146,7 +163,7 @@ class PriceListApiBusinessFactoryTest extends Unit
      */
     public function testCreateProductListApi(): void
     {
-        $this->containerMock->expects($this->atLeastOnce())
+        $this->containerMock->expects(static::atLeastOnce())
             ->method('has')
             ->withConsecutive(
                 [PriceListApiDependencyProvider::PROPEL_CONNECTION],
@@ -154,10 +171,10 @@ class PriceListApiBusinessFactoryTest extends Unit
                 [PriceListApiDependencyProvider::FACADE_PRICE_PRODUCT_PRICE_LIST],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
-                [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCT_HYDRATION]
+                [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION]
             )->willReturn(true);
 
-        $this->containerMock->expects($this->atLeastOnce())
+        $this->containerMock->expects(static::atLeastOnce())
             ->method('get')
             ->withConsecutive(
                 [PriceListApiDependencyProvider::PROPEL_CONNECTION],
@@ -165,7 +182,7 @@ class PriceListApiBusinessFactoryTest extends Unit
                 [PriceListApiDependencyProvider::FACADE_PRICE_PRODUCT_PRICE_LIST],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
-                [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCT_HYDRATION]
+                [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION]
             )
             ->willReturnOnConsecutiveCalls(
                 $this->connectionInterfaceMock,
@@ -176,6 +193,9 @@ class PriceListApiBusinessFactoryTest extends Unit
                 $this->priceProductHydrationPlugins
             );
 
-        $this->assertInstanceOf(PriceListApiInterface::class, $this->priceListApiBusinessFactory->createProductListApi());
+        static::assertInstanceOf(
+            PriceListApi::class,
+            $this->priceListApiBusinessFactory->createProductListApi()
+        );
     }
 }

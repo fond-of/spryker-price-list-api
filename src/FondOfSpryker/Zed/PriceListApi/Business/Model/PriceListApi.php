@@ -51,9 +51,9 @@ class PriceListApi implements PriceListApiInterface
     protected $priceProductPriceListFacade;
 
     /**
-     * @var \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductHydrationPluginInterface[]
+     * @var \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[]
      */
-    protected $priceProductHydrationPlugins;
+    protected $priceProductsHydrationPlugins;
 
     /**
      * @var \Propel\Runtime\Connection\ConnectionInterface
@@ -83,7 +83,7 @@ class PriceListApi implements PriceListApiInterface
      * @param \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface $apiQueryContainer
      * @param \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface $apiQueryBuilderQueryContainer
      * @param \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface $queryContainer
-     * @param \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductHydrationPluginInterface[] $priceProductHydrationPlugins
+     * @param \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[] $priceProductsHydrationPlugins
      */
     public function __construct(
         ConnectionInterface $connection,
@@ -93,22 +93,20 @@ class PriceListApi implements PriceListApiInterface
         PriceListApiToApiQueryContainerInterface $apiQueryContainer,
         PriceListApiToApiQueryBuilderQueryContainerInterface $apiQueryBuilderQueryContainer,
         PriceListApiQueryContainerInterface $queryContainer,
-        array $priceProductHydrationPlugins
+        array $priceProductsHydrationPlugins
     ) {
         $this->connection = $connection;
         $this->priceListFacade = $priceListFacade;
         $this->priceProductPriceListFacade = $priceProductPriceListFacade;
         $this->transferMapper = $transferMapper;
         $this->apiQueryContainer = $apiQueryContainer;
-        $this->priceProductHydrationPlugins = $priceProductHydrationPlugins;
+        $this->priceProductsHydrationPlugins = $priceProductsHydrationPlugins;
         $this->queryContainer = $queryContainer;
         $this->apiQueryBuilderQueryContainer = $apiQueryBuilderQueryContainer;
     }
 
     /**
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
-     *
-     * @throws
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
@@ -140,6 +138,7 @@ class PriceListApi implements PriceListApiInterface
             $priceListTransfer = $this->priceListFacade->createPriceList($priceListTransfer);
         } catch (Throwable $throwable) {
             $this->connection->rollBack();
+
             throw new EntityNotSavedException(sprintf('Could not save price list: %s', $throwable->getMessage()), ApiConfig::HTTP_CODE_INTERNAL_ERROR);
         }
 
@@ -167,7 +166,8 @@ class PriceListApi implements PriceListApiInterface
         $data = (array)$apiDataTransfer->getData();
         $priceListApiTransfer = $this->transferMapper->toTransfer($data);
 
-        $priceListTransfer->fromArray($priceListApiTransfer->toArray(), true);
+        $priceListTransfer->fromArray($priceListApiTransfer->toArray(), true)
+            ->setIdPriceList($id);
 
         $priceListTransfer = $this->updatePriceList($priceListTransfer);
 
@@ -189,6 +189,7 @@ class PriceListApi implements PriceListApiInterface
             $priceListTransfer = $this->priceListFacade->updatePriceList($priceListTransfer);
         } catch (Throwable $throwable) {
             $this->connection->rollBack();
+
             throw new EntityNotSavedException(sprintf('Could not save price list: %s', $throwable->getMessage()), ApiConfig::HTTP_CODE_INTERNAL_ERROR);
         }
 
@@ -201,7 +202,6 @@ class PriceListApi implements PriceListApiInterface
      * @param \Generated\Shared\Transfer\PriceListTransfer $priceListTransfer
      * @param \Generated\Shared\Transfer\PriceListApiTransfer $priceListApiTransfer
      *
-     * @throws
      * @throws \Spryker\Zed\Api\Business\Exception\EntityNotSavedException
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
@@ -212,11 +212,18 @@ class PriceListApi implements PriceListApiInterface
     ): ApiItemTransfer {
         $this->connection->beginTransaction();
 
-        foreach ($priceListApiTransfer->getPriceListEntries() as $priceProductTransfer) {
+        $priceProductTransfers = $priceListApiTransfer->getPriceListEntries()->getArrayCopy();
+
+        foreach ($this->priceProductsHydrationPlugins as $priceProductsHydrationPlugin) {
+            $priceProductTransfers = $priceProductsHydrationPlugin->hydrate($priceProductTransfers);
+        }
+
+        foreach ($priceProductTransfers as $priceProductTransfer) {
             try {
                 $this->persistPriceProduct($priceListTransfer, $priceProductTransfer);
             } catch (Throwable $throwable) {
                 $this->connection->rollBack();
+
                 throw new EntityNotSavedException(sprintf('Could not save price list entries: %s', $throwable->getMessage()), ApiConfig::HTTP_CODE_INTERNAL_ERROR);
             }
         }
@@ -242,15 +249,11 @@ class PriceListApi implements PriceListApiInterface
             throw new MissingPriceDimensionException('Price dimension is missing.', ApiConfig::HTTP_CODE_INTERNAL_ERROR);
         }
 
-        $priceProductTransfer->getPriceDimension()->setIdPriceList($priceListTransfer->getIdPriceList());
-
-        foreach ($this->priceProductHydrationPlugins as $priceProductHydrationPlugin) {
-            $priceProductTransfer = $priceProductHydrationPlugin->hydrate($priceProductTransfer);
-        }
-
         if ($priceProductTransfer->getIdProductAbstract() === null && $priceProductTransfer->getIdProduct() === null) {
             return $priceProductTransfer;
         }
+
+        $priceProductTransfer->getPriceDimension()->setIdPriceList($priceListTransfer->getIdPriceList());
 
         $this->priceProductPriceListFacade->savePriceProductPriceList($priceProductTransfer);
 
@@ -272,8 +275,6 @@ class PriceListApi implements PriceListApiInterface
 
     /**
      * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer
-     *
-     * @throws
      *
      * @return \Generated\Shared\Transfer\ApiCollectionTransfer
      */
@@ -322,8 +323,6 @@ class PriceListApi implements PriceListApiInterface
     }
 
     /**
-     * @throws
-     *
      * @return \Generated\Shared\Transfer\PropelQueryBuilderColumnSelectionTransfer
      */
     protected function buildColumnSelection(): PropelQueryBuilderColumnSelectionTransfer
@@ -347,7 +346,7 @@ class PriceListApi implements PriceListApiInterface
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      *
-     * @return array|\Generated\Shared\Transfer\ApiCollectionTransfer
+     * @return \Generated\Shared\Transfer\ApiCollectionTransfer
      */
     protected function addPagination(
         ModelCriteria $query,

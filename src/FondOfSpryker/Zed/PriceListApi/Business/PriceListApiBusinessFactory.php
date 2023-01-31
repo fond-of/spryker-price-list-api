@@ -10,11 +10,11 @@ use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi;
 use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApiInterface;
 use FondOfSpryker\Zed\PriceListApi\Business\Validator\PriceListApiValidator;
 use FondOfSpryker\Zed\PriceListApi\Business\Validator\PriceListApiValidatorInterface;
+use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToProductFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface;
-use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface;
 use FondOfSpryker\Zed\PriceListApi\PriceListApiDependencyProvider;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
@@ -47,7 +47,7 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
             $this->getPriceListFacade(),
             $this->getPriceProductPriceListFacade(),
             $this->createApiDataTransferMapper(),
-            $this->getApiQueryContainer(),
+            $this->getApiFacade(),
             $this->getApiQueryBuilderQueryContainer(),
             $this->getQueryContainer(),
             $this->getPriceProductsHydrationPlugins(),
@@ -111,11 +111,11 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @return \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface
+     * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeInterface
      */
-    protected function getApiQueryContainer(): PriceListApiToApiQueryContainerInterface
+    protected function getApiFacade(): PriceListApiToApiFacadeInterface
     {
-        return $this->getProvidedDependency(PriceListApiDependencyProvider::QUERY_CONTAINER_API);
+        return $this->getProvidedDependency(PriceListApiDependencyProvider::FACADE_API);
     }
 
     /**

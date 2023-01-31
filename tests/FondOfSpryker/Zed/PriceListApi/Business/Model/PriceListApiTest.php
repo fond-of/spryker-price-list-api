@@ -5,11 +5,11 @@ namespace FondOfSpryker\Zed\PriceListApi\Business\Model;
 use Codeception\Test\Unit;
 use Exception;
 use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapper;
+use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface;
-use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface;
 use FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface;
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
@@ -43,7 +43,7 @@ class PriceListApiTest extends Unit
     protected $transferMapperMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeInterface
      */
     protected $apiQueryContainerMock;
 
@@ -120,7 +120,7 @@ class PriceListApiTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->apiQueryContainerMock = $this->getMockBuilder(PriceListApiToApiQueryContainerInterface::class)
+        $this->apiQueryContainerMock = $this->getMockBuilder(PriceListApiToApiFacadeInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 

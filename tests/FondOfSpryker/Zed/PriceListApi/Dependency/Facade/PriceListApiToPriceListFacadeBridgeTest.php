@@ -46,12 +46,15 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
      */
     public function testFindPriceListByName(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('findPriceListByName')
             ->with($this->priceListTransferMock)
             ->willReturn($this->priceListTransferMock);
 
-        $this->assertInstanceOf(PriceListTransfer::class, $this->priceListApiToPriceListFacadeBridge->findPriceListByName($this->priceListTransferMock));
+        static::assertEquals(
+            $this->priceListTransferMock,
+            $this->priceListApiToPriceListFacadeBridge->findPriceListByName($this->priceListTransferMock),
+        );
     }
 
     /**
@@ -59,12 +62,15 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
      */
     public function testCreatePriceList(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('createPriceList')
             ->with($this->priceListTransferMock)
             ->willReturn($this->priceListTransferMock);
 
-        $this->assertInstanceOf(PriceListTransfer::class, $this->priceListApiToPriceListFacadeBridge->createPriceList($this->priceListTransferMock));
+        static::assertEquals(
+            $this->priceListTransferMock,
+            $this->priceListApiToPriceListFacadeBridge->createPriceList($this->priceListTransferMock),
+        );
     }
 
     /**
@@ -72,12 +78,15 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
      */
     public function testUpdatePriceList(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('updatePriceList')
             ->with($this->priceListTransferMock)
             ->willReturn($this->priceListTransferMock);
 
-        $this->assertInstanceOf(PriceListTransfer::class, $this->priceListApiToPriceListFacadeBridge->updatePriceList($this->priceListTransferMock));
+        static::assertEquals(
+            $this->priceListTransferMock,
+            $this->priceListApiToPriceListFacadeBridge->updatePriceList($this->priceListTransferMock),
+        );
     }
 
     /**
@@ -85,11 +94,14 @@ class PriceListApiToPriceListFacadeBridgeTest extends Unit
      */
     public function testFindPriceListById(): void
     {
-        $this->priceListFacadeMock->expects($this->atLeastOnce())
+        $this->priceListFacadeMock->expects(static::atLeastOnce())
             ->method('findPriceListById')
             ->with($this->priceListTransferMock)
             ->willReturn($this->priceListTransferMock);
 
-        $this->assertInstanceOf(PriceListTransfer::class, $this->priceListApiToPriceListFacadeBridge->findPriceListById($this->priceListTransferMock));
+        static::assertEquals(
+            $this->priceListTransferMock,
+            $this->priceListApiToPriceListFacadeBridge->findPriceListById($this->priceListTransferMock),
+        );
     }
 }

@@ -227,8 +227,9 @@ class PriceListApiFacadeTest extends Unit
 
         $this->priceListApiValidatorInterfaceMock->expects(static::atLeastOnce())
             ->method('validate')
+            ->with($this->apiRequestTransferMock)
             ->willReturn([]);
 
-        static::assertIsArray($this->priceListApiFacade->validate($this->apiDataTransferMock));
+        static::assertIsArray($this->priceListApiFacade->validate($this->apiRequestTransferMock));
     }
 }

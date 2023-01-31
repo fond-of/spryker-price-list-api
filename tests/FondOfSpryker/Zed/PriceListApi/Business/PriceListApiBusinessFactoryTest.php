@@ -6,11 +6,11 @@ use Codeception\Test\Unit;
 use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydrator;
 use FondOfSpryker\Zed\PriceListApi\Business\Model\PriceListApi;
 use FondOfSpryker\Zed\PriceListApi\Business\Validator\PriceListApiValidator;
+use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeBridge;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToProductFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface;
-use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerBridge;
 use FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainer;
 use FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiRepository;
 use FondOfSpryker\Zed\PriceListApi\PriceListApiDependencyProvider;
@@ -55,7 +55,7 @@ class PriceListApiBusinessFactoryTest extends Unit
     private $facadePriceProductPriceListMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeInterface
      */
     private $queryContainerApiMock;
 
@@ -101,7 +101,7 @@ class PriceListApiBusinessFactoryTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->queryContainerApiMock = $this->getMockBuilder(PriceListApiToApiQueryContainerBridge::class)
+        $this->queryContainerApiMock = $this->getMockBuilder(PriceListApiToApiFacadeBridge::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -169,7 +169,7 @@ class PriceListApiBusinessFactoryTest extends Unit
                 [PriceListApiDependencyProvider::PROPEL_CONNECTION],
                 [PriceListApiDependencyProvider::FACADE_PRICE_LIST],
                 [PriceListApiDependencyProvider::FACADE_PRICE_PRODUCT_PRICE_LIST],
-                [PriceListApiDependencyProvider::QUERY_CONTAINER_API],
+                [PriceListApiDependencyProvider::FACADE_API],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
                 [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION],
             )->willReturn(true);
@@ -180,7 +180,7 @@ class PriceListApiBusinessFactoryTest extends Unit
                 [PriceListApiDependencyProvider::PROPEL_CONNECTION],
                 [PriceListApiDependencyProvider::FACADE_PRICE_LIST],
                 [PriceListApiDependencyProvider::FACADE_PRICE_PRODUCT_PRICE_LIST],
-                [PriceListApiDependencyProvider::QUERY_CONTAINER_API],
+                [PriceListApiDependencyProvider::FACADE_API],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
                 [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION],
             )

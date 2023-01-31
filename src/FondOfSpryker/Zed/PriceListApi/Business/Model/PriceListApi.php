@@ -4,10 +4,10 @@ namespace FondOfSpryker\Zed\PriceListApi\Business\Model;
 
 use FondOfSpryker\Zed\PriceListApi\Business\Exception\MissingPriceDimensionException;
 use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapperInterface;
+use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface;
-use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface;
 use FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface;
 use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
@@ -61,9 +61,9 @@ class PriceListApi implements PriceListApiInterface
     protected $connection;
 
     /**
-     * @var \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface
+     * @var \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeInterface
      */
-    protected $apiQueryContainer;
+    protected $apiFacade;
 
     /**
      * @var \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface
@@ -80,7 +80,7 @@ class PriceListApi implements PriceListApiInterface
      * @param \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface $priceListFacade
      * @param \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface $priceProductPriceListFacade
      * @param \FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapperInterface $transferMapper
-     * @param \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface $apiQueryContainer
+     * @param \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeInterface $apiFacade
      * @param \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface $apiQueryBuilderQueryContainer
      * @param \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface $queryContainer
      * @param array<\FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface> $priceProductsHydrationPlugins
@@ -90,7 +90,7 @@ class PriceListApi implements PriceListApiInterface
         PriceListApiToPriceListFacadeInterface $priceListFacade,
         PriceListApiToPriceProductPriceListFacadeInterface $priceProductPriceListFacade,
         TransferMapperInterface $transferMapper,
-        PriceListApiToApiQueryContainerInterface $apiQueryContainer,
+        PriceListApiToApiFacadeInterface $apiFacade,
         PriceListApiToApiQueryBuilderQueryContainerInterface $apiQueryBuilderQueryContainer,
         PriceListApiQueryContainerInterface $queryContainer,
         array $priceProductsHydrationPlugins
@@ -99,7 +99,7 @@ class PriceListApi implements PriceListApiInterface
         $this->priceListFacade = $priceListFacade;
         $this->priceProductPriceListFacade = $priceProductPriceListFacade;
         $this->transferMapper = $transferMapper;
-        $this->apiQueryContainer = $apiQueryContainer;
+        $this->apiFacade = $apiFacade;
         $this->priceProductsHydrationPlugins = $priceProductsHydrationPlugins;
         $this->queryContainer = $queryContainer;
         $this->apiQueryBuilderQueryContainer = $apiQueryBuilderQueryContainer;
@@ -230,7 +230,7 @@ class PriceListApi implements PriceListApiInterface
 
         $this->connection->commit();
 
-        return $this->apiQueryContainer->createApiItem($priceListApiTransfer, $priceListTransfer->getIdPriceList());
+        return $this->apiFacade->createApiItem($priceListApiTransfer, (string)$priceListTransfer->getIdPriceList());
     }
 
     /**
@@ -287,7 +287,7 @@ class PriceListApi implements PriceListApiInterface
             $collection[$k] = $this->get($priceListApiTransfer->getIdPriceList())->getData();
         }
 
-        $apiCollectionTransfer = $this->apiQueryContainer->createApiCollection($collection);
+        $apiCollectionTransfer = $this->apiFacade->createApiCollection($collection);
         $apiCollectionTransfer = $this->addPagination($query, $apiCollectionTransfer, $apiRequestTransfer);
 
         return $apiCollectionTransfer;
@@ -386,6 +386,6 @@ class PriceListApi implements PriceListApiInterface
             throw new EntityNotFoundException(sprintf('Price list not found for id %s', $idPriceList));
         }
 
-        return $this->apiQueryContainer->createApiItem($priceListTransfer, $idPriceList);
+        return $this->apiFacade->createApiItem($priceListTransfer, (string)$idPriceList);
     }
 }

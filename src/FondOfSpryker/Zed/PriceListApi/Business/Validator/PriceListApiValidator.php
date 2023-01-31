@@ -2,40 +2,62 @@
 
 namespace FondOfSpryker\Zed\PriceListApi\Business\Validator;
 
-use Generated\Shared\Transfer\ApiDataTransfer;
+use Generated\Shared\Transfer\ApiRequestTransfer;
+use Generated\Shared\Transfer\ApiValidationErrorTransfer;
 
 class PriceListApiValidator implements PriceListApiValidatorInterface
 {
     /**
-     * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
-     *
-     * @return array
+     * @var string
      */
-    public function validate(ApiDataTransfer $apiDataTransfer): array
+    protected const KEY_NAME = 'name';
+
+    /**
+     * @var string
+     */
+    protected const KEY_PRICE_LIST_ENTRIES = 'price_list_entries';
+
+    /**
+     * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer
+     *
+     * @return array<\Generated\Shared\Transfer\ApiValidationErrorTransfer>
+     */
+    public function validate(ApiRequestTransfer $apiRequestTransfer): array
     {
-        $data = $apiDataTransfer->getData();
+        $apiData = $apiRequestTransfer->getApiDataOrFail()->getData();
 
-        $errors = [];
-        $errors = $this->assertRequiredField($data, 'name', $errors);
-        $errors = $this->assertRequiredField($data, 'price_list_entries', $errors);
+        $apiValidationErrorTransfers = $this->assertRequiredField($apiData, static::KEY_NAME, []);
 
-        return $errors;
+        return $this->assertRequiredField($apiData, static::KEY_PRICE_LIST_ENTRIES, $apiValidationErrorTransfers);
     }
 
     /**
-     * @param array $data
+     * @param array<string, mixed> $data
      * @param string $field
-     * @param array $errors
+     * @param array<\Generated\Shared\Transfer\ApiValidationErrorTransfer> $apiValidationErrorTransfers
      *
-     * @return array<string>
+     * @return array<\Generated\Shared\Transfer\ApiValidationErrorTransfer>
      */
-    protected function assertRequiredField(array $data, string $field, array $errors): array
+    protected function assertRequiredField(array $data, string $field, array $apiValidationErrorTransfers): array
     {
         if (!isset($data[$field]) || (array_key_exists($field, $data) && !$data[$field])) {
             $message = sprintf('Missing value for required field "%s"', $field);
-            $errors[$field][] = $message;
+            $apiValidationErrorTransfers[] = $this->createApiValidationErrorTransfer($field, [$message]);
         }
 
-        return $errors;
+        return $apiValidationErrorTransfers;
+    }
+
+    /**
+     * @param string $field
+     * @param array<string> $messages
+     *
+     * @return \Generated\Shared\Transfer\ApiValidationErrorTransfer
+     */
+    protected function createApiValidationErrorTransfer(string $field, array $messages): ApiValidationErrorTransfer
+    {
+        return (new ApiValidationErrorTransfer())
+            ->setField($field)
+            ->setMessages($messages);
     }
 }

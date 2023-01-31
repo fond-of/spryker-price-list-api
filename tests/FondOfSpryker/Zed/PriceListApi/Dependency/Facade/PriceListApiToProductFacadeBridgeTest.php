@@ -46,7 +46,7 @@ class PriceListApiToProductFacadeBridgeTest extends Unit
 
         static::assertEquals(
             $productIds,
-            $this->priceListApiToProductFacadeBridge->getProductConcreteIdsByConcreteSkus($skus)
+            $this->priceListApiToProductFacadeBridge->getProductConcreteIdsByConcreteSkus($skus),
         );
     }
 }

@@ -16,14 +16,49 @@ use Spryker\Zed\Kernel\Container;
 
 class PriceListApiDependencyProvider extends AbstractBundleDependencyProvider
 {
+    /**
+     * @var string
+     */
     public const FACADE_PRICE_LIST = 'FACADE_PRICE_LIST';
+
+    /**
+     * @var string
+     */
     public const FACADE_PRICE_PRODUCT_PRICE_LIST = 'FACADE_PRICE_PRODUCT_PRICE_LIST';
+
+    /**
+     * @var string
+     */
     public const FACADE_PRODUCT = 'FACADE_PRODUCT';
+
+    /**
+     * @var string
+     */
     public const PLUGINS_PRICE_PRODUCTS_HYDRATION = 'PLUGINS_PRICE_PRODUCTS_HYDRATION';
+
+    /**
+     * @var string
+     */
     public const PROPEL_CONNECTION = 'PROPEL_CONNECTION';
+
+    /**
+     * @var string
+     */
     public const QUERY_CONTAINER_API = 'QUERY_CONTAINER_API';
+
+    /**
+     * @var string
+     */
     public const PROPEL_QUERY_PRICE_LIST = 'PROPEL_QUERY_PRICE_LIST';
+
+    /**
+     * @var string
+     */
     public const PROPEL_QUERY_PRODUCT_ABSTRACT = 'PROPEL_QUERY_ABSTRACT_PRODUCT';
+
+    /**
+     * @var string
+     */
     public const QUERY_CONTAINER_API_QUERY_BUILDER = 'QUERY_CONTAINER_API_QUERY_BUILDER';
 
     /**
@@ -134,7 +169,7 @@ class PriceListApiDependencyProvider extends AbstractBundleDependencyProvider
     }
 
     /**
-     * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[]
+     * @return array<\FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface>
      */
     protected function getPriceProductsHydrationPlugins(): array
     {
@@ -194,7 +229,7 @@ class PriceListApiDependencyProvider extends AbstractBundleDependencyProvider
     {
         $container[static::QUERY_CONTAINER_API_QUERY_BUILDER] = static function (Container $container) {
             return new PriceListApiToApiQueryBuilderQueryContainerBridge(
-                $container->getLocator()->apiQueryBuilder()->queryContainer()
+                $container->getLocator()->apiQueryBuilder()->queryContainer(),
             );
         };
 

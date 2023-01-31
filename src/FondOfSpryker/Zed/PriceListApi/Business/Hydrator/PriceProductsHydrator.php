@@ -7,7 +7,14 @@ use FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiRepositoryInterface;
 
 class PriceProductsHydrator implements PriceProductsHydratorInterface
 {
+    /**
+     * @var string
+     */
     protected const GROUPED_KEY_ABSTRACT = 'abstract';
+
+    /**
+     * @var string
+     */
     protected const GROUPED_KEY_CONCRETE = 'concrete';
 
     /**
@@ -33,9 +40,9 @@ class PriceProductsHydrator implements PriceProductsHydratorInterface
     }
 
     /**
-     * @param \Generated\Shared\Transfer\PriceProductTransfer[] $priceProductTransfers
+     * @param array<\Generated\Shared\Transfer\PriceProductTransfer> $priceProductTransfers
      *
-     * @return \Generated\Shared\Transfer\PriceProductTransfer[]
+     * @return array<\Generated\Shared\Transfer\PriceProductTransfer>
      */
     public function hydrate(array $priceProductTransfers): array
     {
@@ -55,7 +62,7 @@ class PriceProductsHydrator implements PriceProductsHydratorInterface
     {
         $skus = array_keys($groupedPriceProductTransfers[static::GROUPED_KEY_ABSTRACT]);
 
-        if (empty($skus)) {
+        if (!$skus) {
             return $groupedPriceProductTransfers;
         }
 
@@ -81,7 +88,7 @@ class PriceProductsHydrator implements PriceProductsHydratorInterface
     {
         $skus = array_keys($groupedPriceProductTransfers[static::GROUPED_KEY_CONCRETE]);
 
-        if (empty($skus)) {
+        if (!$skus) {
             return $groupedPriceProductTransfers;
         }
 
@@ -99,7 +106,7 @@ class PriceProductsHydrator implements PriceProductsHydratorInterface
     }
 
     /**
-     * @param \Generated\Shared\Transfer\PriceProductTransfer[] $priceProductTransfers
+     * @param array<\Generated\Shared\Transfer\PriceProductTransfer> $priceProductTransfers
      *
      * @return array<string, array<string, \Generated\Shared\Transfer\PriceProductTransfer>>
      */

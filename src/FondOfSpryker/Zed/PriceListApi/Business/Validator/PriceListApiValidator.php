@@ -27,7 +27,7 @@ class PriceListApiValidator implements PriceListApiValidatorInterface
      * @param string $field
      * @param array $errors
      *
-     * @return string[]
+     * @return array<string>
      */
     protected function assertRequiredField(array $data, string $field, array $errors): array
     {

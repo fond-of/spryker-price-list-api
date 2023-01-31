@@ -13,9 +13,9 @@ use Spryker\Zed\Kernel\Communication\AbstractPlugin;
 class ProductIdsPriceProductsHydrationPlugin extends AbstractPlugin implements PriceProductsHydrationPluginInterface
 {
     /**
-     * @param \Generated\Shared\Transfer\PriceProductTransfer[] $priceProductTransfers
+     * @param array<\Generated\Shared\Transfer\PriceProductTransfer> $priceProductTransfers
      *
-     * @return \Generated\Shared\Transfer\PriceProductTransfer[]
+     * @return array<\Generated\Shared\Transfer\PriceProductTransfer>
      */
     public function hydrate(array $priceProductTransfers): array
     {

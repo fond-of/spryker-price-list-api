@@ -5,9 +5,9 @@ namespace FondOfSpryker\Zed\PriceListApi\Persistence;
 interface PriceListApiRepositoryInterface
 {
     /**
-     * @param string[] $abstractSkus
+     * @param array<string> $abstractSkus
      *
-     * @return int[]
+     * @return array<int>
      */
     public function getProductAbstractIdsByAbstractSkus(array $abstractSkus): array;
 }

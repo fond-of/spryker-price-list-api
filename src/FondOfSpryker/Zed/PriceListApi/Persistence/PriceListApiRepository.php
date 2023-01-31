@@ -11,9 +11,9 @@ use Spryker\Zed\Kernel\Persistence\AbstractRepository;
 class PriceListApiRepository extends AbstractRepository implements PriceListApiRepositoryInterface
 {
     /**
-     * @param string[] $abstractSkus
+     * @param array<string> $abstractSkus
      *
-     * @return int[]
+     * @return array<int>
      */
     public function getProductAbstractIdsByAbstractSkus(array $abstractSkus): array
     {

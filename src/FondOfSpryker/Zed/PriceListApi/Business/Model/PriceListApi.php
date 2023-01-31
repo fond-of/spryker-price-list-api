@@ -51,7 +51,7 @@ class PriceListApi implements PriceListApiInterface
     protected $priceProductPriceListFacade;
 
     /**
-     * @var \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[]
+     * @var array<\FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface>
      */
     protected $priceProductsHydrationPlugins;
 
@@ -83,7 +83,7 @@ class PriceListApi implements PriceListApiInterface
      * @param \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface $apiQueryContainer
      * @param \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface $apiQueryBuilderQueryContainer
      * @param \FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface $queryContainer
-     * @param \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[] $priceProductsHydrationPlugins
+     * @param array<\FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface> $priceProductsHydrationPlugins
      */
     public function __construct(
         ConnectionInterface $connection,

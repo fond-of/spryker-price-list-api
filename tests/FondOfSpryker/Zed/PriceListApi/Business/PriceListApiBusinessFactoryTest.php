@@ -143,7 +143,7 @@ class PriceListApiBusinessFactoryTest extends Unit
 
         static::assertInstanceOf(
             PriceProductsHydrator::class,
-            $this->priceListApiBusinessFactory->createPriceProductsHydrator()
+            $this->priceListApiBusinessFactory->createPriceProductsHydrator(),
         );
     }
 
@@ -154,7 +154,7 @@ class PriceListApiBusinessFactoryTest extends Unit
     {
         static::assertInstanceOf(
             PriceListApiValidator::class,
-            $this->priceListApiBusinessFactory->createPriceListApiValidator()
+            $this->priceListApiBusinessFactory->createPriceListApiValidator(),
         );
     }
 
@@ -171,7 +171,7 @@ class PriceListApiBusinessFactoryTest extends Unit
                 [PriceListApiDependencyProvider::FACADE_PRICE_PRODUCT_PRICE_LIST],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
-                [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION]
+                [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION],
             )->willReturn(true);
 
         $this->containerMock->expects(static::atLeastOnce())
@@ -182,7 +182,7 @@ class PriceListApiBusinessFactoryTest extends Unit
                 [PriceListApiDependencyProvider::FACADE_PRICE_PRODUCT_PRICE_LIST],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API],
                 [PriceListApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
-                [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION]
+                [PriceListApiDependencyProvider::PLUGINS_PRICE_PRODUCTS_HYDRATION],
             )
             ->willReturnOnConsecutiveCalls(
                 $this->connectionInterfaceMock,
@@ -190,12 +190,12 @@ class PriceListApiBusinessFactoryTest extends Unit
                 $this->facadePriceProductPriceListMock,
                 $this->queryContainerApiMock,
                 $this->queryContainerApiQueryBuilderMock,
-                $this->priceProductHydrationPlugins
+                $this->priceProductHydrationPlugins,
             );
 
         static::assertInstanceOf(
             PriceListApi::class,
-            $this->priceListApiBusinessFactory->createProductListApi()
+            $this->priceListApiBusinessFactory->createProductListApi(),
         );
     }
 }

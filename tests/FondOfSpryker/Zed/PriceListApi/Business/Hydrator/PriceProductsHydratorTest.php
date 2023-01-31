@@ -20,7 +20,7 @@ class PriceProductsHydratorTest extends Unit
     protected $repositoryMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject[]|\Generated\Shared\Transfer\PriceProductTransfer[]
+     * @var array<\Generated\Shared\Transfer\PriceProductTransfer>|array<\PHPUnit\Framework\MockObject\MockObject>
      */
     protected $priceProductTransferMocks;
 
@@ -55,7 +55,7 @@ class PriceProductsHydratorTest extends Unit
 
         $this->priceProductsHydrator = new PriceProductsHydrator(
             $this->productFacadeMock,
-            $this->repositoryMock
+            $this->repositoryMock,
         );
     }
 
@@ -118,7 +118,7 @@ class PriceProductsHydratorTest extends Unit
 
         static::assertEquals(
             $this->priceProductTransferMocks,
-            $this->priceProductsHydrator->hydrate($this->priceProductTransferMocks)
+            $this->priceProductsHydrator->hydrate($this->priceProductTransferMocks),
         );
     }
 }

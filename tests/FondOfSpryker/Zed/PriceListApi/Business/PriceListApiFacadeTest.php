@@ -45,7 +45,7 @@ class PriceListApiFacadeTest extends Unit
     protected $idPriceList;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject[]|\Generated\Shared\Transfer\PriceProductTransfer[]
+     * @var array<\Generated\Shared\Transfer\PriceProductTransfer>|array<\PHPUnit\Framework\MockObject\MockObject>
      */
     protected $priceProductTransferMocks;
 
@@ -136,7 +136,7 @@ class PriceListApiFacadeTest extends Unit
 
         static::assertEquals(
             $this->apiItemTransferMock,
-            $this->priceListApiFacade->addPriceList($this->apiDataTransferMock)
+            $this->priceListApiFacade->addPriceList($this->apiDataTransferMock),
         );
     }
 
@@ -156,7 +156,7 @@ class PriceListApiFacadeTest extends Unit
 
         static::assertEquals(
             $this->apiItemTransferMock,
-            $this->priceListApiFacade->updatePriceList($this->idPriceList, $this->apiDataTransferMock)
+            $this->priceListApiFacade->updatePriceList($this->idPriceList, $this->apiDataTransferMock),
         );
     }
 
@@ -177,8 +177,8 @@ class PriceListApiFacadeTest extends Unit
         static::assertEquals(
             $this->priceProductTransferMocks,
             $this->priceListApiFacade->hydratePriceProductsWithProductIds(
-                $this->priceProductTransferMocks
-            )
+                $this->priceProductTransferMocks,
+            ),
         );
     }
 

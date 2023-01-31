@@ -16,7 +16,7 @@ interface TransferMapperInterface
     /**
      * @param array $data
      *
-     * @return \Generated\Shared\Transfer\PriceListApiTransfer[]
+     * @return array<\Generated\Shared\Transfer\PriceListApiTransfer>
      */
     public function toTransferCollection(array $data): array;
 }

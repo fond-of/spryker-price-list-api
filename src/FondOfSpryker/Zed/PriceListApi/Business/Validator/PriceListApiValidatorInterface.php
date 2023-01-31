@@ -9,7 +9,7 @@ interface PriceListApiValidatorInterface
     /**
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
-     * @return string[]
+     * @return array<string>
      */
     public function validate(ApiDataTransfer $apiDataTransfer): array;
 }

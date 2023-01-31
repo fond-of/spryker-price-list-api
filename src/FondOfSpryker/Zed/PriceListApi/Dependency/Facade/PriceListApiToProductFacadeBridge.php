@@ -20,9 +20,9 @@ class PriceListApiToProductFacadeBridge implements PriceListApiToProductFacadeIn
     }
 
     /**
-     * @param string[] $skus
+     * @param array<string> $skus
      *
-     * @return int[]
+     * @return array<int>
      */
     public function getProductConcreteIdsByConcreteSkus(array $skus): array
     {

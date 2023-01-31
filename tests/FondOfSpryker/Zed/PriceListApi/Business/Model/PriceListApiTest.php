@@ -8,6 +8,7 @@ use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydratorInterf
 use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapper;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;
+use FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerInterface;
 use FondOfSpryker\Zed\PriceListApi\Persistence\PriceListApiQueryContainerInterface;
@@ -88,7 +89,7 @@ class PriceListApiTest extends Unit
     protected $priceProductDimensionTransferMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject[]|\FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[]
+     * @var array<\FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface|\PHPUnit\Framework\MockObject\MockObject>
      */
     protected $priceProductsHydrationPluginMocks;
 
@@ -157,7 +158,7 @@ class PriceListApiTest extends Unit
             ->getMock();
 
         $this->priceProductsHydrationPluginMocks = [
-            $this->getMockBuilder(PriceProductsHydratorInterface::class)
+            $this->getMockBuilder(PriceProductsHydrationPluginInterface::class)
                 ->disableOriginalConstructor()
                 ->getMock(),
         ];
@@ -170,7 +171,7 @@ class PriceListApiTest extends Unit
             $this->apiQueryContainerMock,
             $this->apiQueryBuilderQueryContainerMock,
             $this->queryContainerMock,
-            $this->priceProductsHydrationPluginMocks
+            $this->priceProductsHydrationPluginMocks,
         );
     }
 
@@ -333,8 +334,8 @@ class PriceListApiTest extends Unit
                 static::callback(
                     static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
                         return $priceListTransfer->getIdPriceList() === $idPriceList;
-                    }
-                )
+                    },
+                ),
             )
             ->willReturn($this->priceListTransferMock);
 
@@ -420,8 +421,8 @@ class PriceListApiTest extends Unit
                 static::callback(
                     static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
                         return $priceListTransfer->getIdPriceList() === $idPriceList;
-                    }
-                )
+                    },
+                ),
             )
             ->willReturn($this->priceListTransferMock);
 
@@ -524,8 +525,8 @@ class PriceListApiTest extends Unit
                 static::callback(
                     static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
                         return $priceListTransfer->getIdPriceList() === $idPriceList;
-                    }
-                )
+                    },
+                ),
             )->willReturn($this->priceListTransferMock);
 
         $this->apiDataTransferMock->expects(static::atLeastOnce())
@@ -603,7 +604,7 @@ class PriceListApiTest extends Unit
 
         static::assertEquals(
             $this->apiItemTransferMock,
-            $this->priceListApi->update($idPriceList, $this->apiDataTransferMock)
+            $this->priceListApi->update($idPriceList, $this->apiDataTransferMock),
         );
     }
 
@@ -620,8 +621,8 @@ class PriceListApiTest extends Unit
                 static::callback(
                     static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
                         return $priceListTransfer->getIdPriceList() === $idPriceList;
-                    }
-                )
+                    },
+                ),
             )->willReturn(null);
 
         try {
@@ -643,8 +644,8 @@ class PriceListApiTest extends Unit
                 static::callback(
                     static function (PriceListTransfer $priceListTransfer) use ($idPriceList) {
                         return $priceListTransfer->getIdPriceList() === $idPriceList;
-                    }
-                )
+                    },
+                ),
             )->willReturn($this->priceListTransferMock);
 
         $this->apiQueryContainerMock->expects(static::atLeastOnce())

@@ -38,9 +38,9 @@ interface PriceListApiFacadeInterface
      * Specification:
      * - Hydrate price products with product ids (sku is required)
      *
-     * @param \Generated\Shared\Transfer\PriceProductTransfer[] $priceProductTransfer
+     * @param array<\Generated\Shared\Transfer\PriceProductTransfer> $priceProductTransfer
      *
-     * @return \Generated\Shared\Transfer\PriceProductTransfer[]
+     * @return array<\Generated\Shared\Transfer\PriceProductTransfer>
      */
     public function hydratePriceProductsWithProductIds(array $priceProductTransfer): array;
 

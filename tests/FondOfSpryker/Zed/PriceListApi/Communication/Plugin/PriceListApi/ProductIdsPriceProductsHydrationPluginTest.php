@@ -14,7 +14,7 @@ class ProductIdsPriceProductsHydrationPluginTest extends Unit
     protected $priceListApiFacadeMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject[]|\Generated\Shared\Transfer\PriceProductTransfer[]
+     * @var array<\Generated\Shared\Transfer\PriceProductTransfer>|array<\PHPUnit\Framework\MockObject\MockObject>
      */
     protected $priceProductTransferMocks;
 
@@ -56,7 +56,7 @@ class ProductIdsPriceProductsHydrationPluginTest extends Unit
 
         static::assertEquals(
             $this->priceProductTransferMocks,
-            $this->productIdsPriceProductsHydrationPlugin->hydrate($this->priceProductTransferMocks)
+            $this->productIdsPriceProductsHydrationPlugin->hydrate($this->priceProductTransferMocks),
         );
     }
 }

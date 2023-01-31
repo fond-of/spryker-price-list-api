@@ -33,7 +33,7 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     {
         return new PriceProductsHydrator(
             $this->getProductFacade(),
-            $this->getRepository()
+            $this->getRepository(),
         );
     }
 
@@ -50,7 +50,7 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
             $this->getApiQueryContainer(),
             $this->getApiQueryBuilderQueryContainer(),
             $this->getQueryContainer(),
-            $this->getPriceProductsHydrationPlugins()
+            $this->getPriceProductsHydrationPlugins(),
         );
     }
 
@@ -95,7 +95,7 @@ class PriceListApiBusinessFactory extends AbstractBusinessFactory
     }
 
     /**
-     * @return \FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface[]
+     * @return array<\FondOfSpryker\Zed\PriceListApi\Dependency\Plugin\PriceProductsHydrationPluginInterface>
      */
     protected function getPriceProductsHydrationPlugins(): array
     {

@@ -9,7 +9,7 @@
     }
   ],
   "require": {
-    "php": ">=7.3",
+    "php": ">=8.0",
     "fond-of-spryker/price-list": "dev-master",
     "fond-of-spryker/price-product-price-list": "dev-master",
     "spryker/api": "^0.1.0 || ^0.2.0 || ^0.3.0",
@@ -17,7 +17,7 @@
     "spryker/price-product": "^2.0.0 || ^4.0.0"
   },
   "require-dev": {
-    "fond-of-codeception/spryker": "^1.0 || ^2.0.0",
+    "fond-of-codeception/spryker": "^1.0 || ^2.0",
     "spryker/code-sniffer": "*",
     "spryker-sdk/phpstan-spryker": "*"
   },

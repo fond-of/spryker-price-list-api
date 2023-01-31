@@ -4,7 +4,6 @@ namespace FondOfSpryker\Zed\PriceListApi\Business\Model;
 
 use Codeception\Test\Unit;
 use Exception;
-use FondOfSpryker\Zed\PriceListApi\Business\Hydrator\PriceProductsHydratorInterface;
 use FondOfSpryker\Zed\PriceListApi\Business\Mapper\TransferMapper;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeInterface;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeInterface;

@@ -5,6 +5,7 @@ namespace FondOfSpryker\Zed\PriceListApi\Business\Validator;
 
 use Codeception\Test\Unit;
 use Generated\Shared\Transfer\ApiDataTransfer;
+use Generated\Shared\Transfer\ApiRequestTransfer;
 
 class PriceListApiValidatorTest extends Unit
 {
@@ -14,14 +15,19 @@ class PriceListApiValidatorTest extends Unit
     protected $priceListApiValidator;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiDataTransfer
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiRequestTransfer
      */
-    protected $apiDataTransferMock;
+    protected $apiRequestTransferMock;
 
     /**
      * @var array
      */
     protected $transferData;
+
+    /**
+     * @var \Generated\Shared\Transfer\ApiDataTransfer|\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $apiDataTransferMock;
 
     /**
      * @return void
@@ -30,11 +36,20 @@ class PriceListApiValidatorTest extends Unit
     {
         parent::_before();
 
+        $this->apiRequestTransferMock = $this->getMockBuilder(ApiRequestTransfer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->apiDataTransferMock = $this->getMockBuilder(ApiDataTransfer::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->transferData = [['name' => 'Lorem Ipsum']];
+        $this->transferData = [
+            [
+                'name' => 'Lorem Ipsum',
+                'price_list_entries' => [],
+            ],
+        ];
 
         $this->priceListApiValidator = new PriceListApiValidator();
     }
@@ -44,10 +59,14 @@ class PriceListApiValidatorTest extends Unit
      */
     public function testValidate(): void
     {
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
+        $this->apiRequestTransferMock->expects($this->atLeastOnce())
+            ->method('getApiDataOrFail')
+            ->willReturn($this->apiDataTransferMock);
+
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
             ->method('getData')
             ->willReturn($this->transferData);
 
-        $this->assertIsArray($this->priceListApiValidator->validate($this->apiDataTransferMock));
+        $this->assertIsArray($this->priceListApiValidator->validate($this->apiRequestTransferMock));
     }
 }

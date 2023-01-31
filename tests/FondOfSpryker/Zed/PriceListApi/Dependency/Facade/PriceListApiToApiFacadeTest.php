@@ -1,24 +1,24 @@
 <?php
 
-namespace FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer;
+namespace FondOfSpryker\Zed\PriceListApi\Dependency\Facade;
 
 use Codeception\Test\Unit;
 use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
 use Spryker\Shared\Kernel\Transfer\AbstractTransfer;
-use Spryker\Zed\Api\Persistence\ApiQueryContainer;
+use Spryker\Zed\Api\Business\ApiFacadeInterface;
 
-class PriceListApiToApiQueryContainerBridgeTest extends Unit
+class PriceListApiToApiFacadeTest extends Unit
 {
     /**
-     * @var \FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerBridge
+     * @var \FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeBridge
      */
-    protected $priceListApiToApiQueryContainerBridge;
+    protected $bridge;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Api\Persistence\ApiQueryContainer
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Api\Business\ApiFacadeInterface
      */
-    protected $apiQueryContainerMock;
+    protected $facadeMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Shared\Kernel\Transfer\AbstractTransfer
@@ -26,7 +26,7 @@ class PriceListApiToApiQueryContainerBridgeTest extends Unit
     protected $abstractTransferMock;
 
     /**
-     * @var int
+     * @var string
      */
     private $id;
 
@@ -52,7 +52,7 @@ class PriceListApiToApiQueryContainerBridgeTest extends Unit
     {
         parent::_before();
 
-        $this->apiQueryContainerMock = $this->getMockBuilder(ApiQueryContainer::class)
+        $this->facadeMock = $this->getMockBuilder(ApiFacadeInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -68,11 +68,11 @@ class PriceListApiToApiQueryContainerBridgeTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->id = 1;
+        $this->id = '1';
 
         $this->transferData = [];
 
-        $this->priceListApiToApiQueryContainerBridge = new PriceListApiToApiQueryContainerBridge($this->apiQueryContainerMock);
+        $this->bridge = new PriceListApiToApiFacadeBridge($this->facadeMock);
     }
 
     /**
@@ -80,12 +80,15 @@ class PriceListApiToApiQueryContainerBridgeTest extends Unit
      */
     public function testCreateApiItem(): void
     {
-        $this->apiQueryContainerMock->expects($this->atLeastOnce())
+        $this->facadeMock->expects(static::atLeastOnce())
             ->method('createApiItem')
             ->with($this->abstractTransferMock, $this->id)
             ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->priceListApiToApiQueryContainerBridge->createApiItem($this->abstractTransferMock, $this->id));
+        static::assertEquals(
+            $this->apiItemTransferMock,
+            $this->bridge->createApiItem($this->abstractTransferMock, $this->id),
+        );
     }
 
     /**
@@ -93,11 +96,14 @@ class PriceListApiToApiQueryContainerBridgeTest extends Unit
      */
     public function testCreateApiCollection(): void
     {
-        $this->apiQueryContainerMock->expects($this->atLeastOnce())
+        $this->facadeMock->expects(static::atLeastOnce())
             ->method('createApiCollection')
             ->with($this->transferData)
             ->willReturn($this->apiCollectionTransferMock);
 
-        $this->assertInstanceOf(ApiCollectionTransfer::class, $this->priceListApiToApiQueryContainerBridge->createApiCollection($this->transferData));
+        static::assertEquals(
+            $this->apiCollectionTransferMock,
+            $this->bridge->createApiCollection($this->transferData),
+        );
     }
 }

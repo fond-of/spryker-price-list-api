@@ -48,11 +48,13 @@ interface PriceListApiFacadeInterface
      * Specification:
      * - Validate api data.
      *
-     * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
+     * @api
      *
-     * @return array
+     * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer
+     *
+     * @return array<\Generated\Shared\Transfer\ApiValidationErrorTransfer>
      */
-    public function validate(ApiDataTransfer $apiDataTransfer): array;
+    public function validate(ApiRequestTransfer $apiRequestTransfer): array;
 
     /**
      * Specification:

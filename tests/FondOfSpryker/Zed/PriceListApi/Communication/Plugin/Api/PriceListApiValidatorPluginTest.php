@@ -5,7 +5,7 @@ namespace FondOfSpryker\Zed\PriceListApi\Communication\Plugin\Api;
 use Codeception\Test\Unit;
 use FondOfSpryker\Zed\PriceListApi\Business\PriceListApiFacade;
 use FondOfSpryker\Zed\PriceListApi\PriceListApiConfig;
-use Generated\Shared\Transfer\ApiDataTransfer;
+use Generated\Shared\Transfer\ApiRequestTransfer;
 
 class PriceListApiValidatorPluginTest extends Unit
 {
@@ -20,9 +20,9 @@ class PriceListApiValidatorPluginTest extends Unit
     protected $priceListApiFacadeMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiDataTransfer
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiRequestTransfer
      */
-    protected $apiDataTransferMock;
+    protected $apiRequestTransferMock;
 
     /**
      * @return void
@@ -35,7 +35,7 @@ class PriceListApiValidatorPluginTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->apiDataTransferMock = $this->getMockBuilder(ApiDataTransfer::class)
+        $this->apiRequestTransferMock = $this->getMockBuilder(ApiRequestTransfer::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -57,6 +57,6 @@ class PriceListApiValidatorPluginTest extends Unit
      */
     public function testValidate(): void
     {
-        $this->assertIsArray($this->priceListApiValidatorPlugin->validate($this->apiDataTransferMock));
+        $this->assertIsArray($this->priceListApiValidatorPlugin->validate($this->apiRequestTransferMock));
     }
 }

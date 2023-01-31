@@ -3,8 +3,8 @@
 namespace FondOfSpryker\Zed\PriceListApi\Communication\Plugin\Api;
 
 use FondOfSpryker\Zed\PriceListApi\PriceListApiConfig;
-use Generated\Shared\Transfer\ApiDataTransfer;
-use Spryker\Zed\Api\Dependency\Plugin\ApiValidatorPluginInterface;
+use Generated\Shared\Transfer\ApiRequestTransfer;
+use Spryker\Zed\ApiExtension\Dependency\Plugin\ApiValidatorPluginInterface;
 use Spryker\Zed\Kernel\Communication\AbstractPlugin;
 
 /**
@@ -15,8 +15,6 @@ use Spryker\Zed\Kernel\Communication\AbstractPlugin;
 class PriceListApiValidatorPlugin extends AbstractPlugin implements ApiValidatorPluginInterface
 {
     /**
-     * @api
-     *
      * @return string
      */
     public function getResourceName(): string
@@ -25,14 +23,12 @@ class PriceListApiValidatorPlugin extends AbstractPlugin implements ApiValidator
     }
 
     /**
-     * @api
-     *
-     * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
+     * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer
      *
      * @return array<\Generated\Shared\Transfer\ApiValidationErrorTransfer>
      */
-    public function validate(ApiDataTransfer $apiDataTransfer): array
+    public function validate(ApiRequestTransfer $apiRequestTransfer): array
     {
-        return $this->getFacade()->validate($apiDataTransfer);
+        return $this->getFacade()->validate($apiRequestTransfer);
     }
 }

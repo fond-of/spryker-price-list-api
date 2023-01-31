@@ -13,9 +13,7 @@ class TransferMapper implements TransferMapperInterface
      */
     public function toTransfer(array $data): PriceListApiTransfer
     {
-        $priceListTransfer = new PriceListApiTransfer();
-
-        return $priceListTransfer->fromArray($data, true);
+        return (new PriceListApiTransfer())->fromArray($data, true);
     }
 
     /**

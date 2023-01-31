@@ -3,11 +3,11 @@
 namespace FondOfSpryker\Zed\PriceListApi;
 
 use FondOfSpryker\Zed\PriceListApi\Communication\Plugin\PriceListApi\ProductIdsPriceProductsHydrationPlugin;
+use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToApiFacadeBridge;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceListFacadeBridge;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToPriceProductPriceListFacadeBridge;
 use FondOfSpryker\Zed\PriceListApi\Dependency\Facade\PriceListApiToProductFacadeBridge;
 use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryBuilderQueryContainerBridge;
-use FondOfSpryker\Zed\PriceListApi\Dependency\QueryContainer\PriceListApiToApiQueryContainerBridge;
 use Orm\Zed\PriceList\Persistence\FosPriceListQuery;
 use Orm\Zed\Product\Persistence\SpyProductAbstractQuery;
 use Propel\Runtime\Propel;
@@ -44,7 +44,7 @@ class PriceListApiDependencyProvider extends AbstractBundleDependencyProvider
     /**
      * @var string
      */
-    public const QUERY_CONTAINER_API = 'QUERY_CONTAINER_API';
+    public const FACADE_API = 'FACADE_API';
 
     /**
      * @var string
@@ -75,10 +75,9 @@ class PriceListApiDependencyProvider extends AbstractBundleDependencyProvider
         $container = $this->addProductFacade($container);
         $container = $this->addPropelCommunication($container);
         $container = $this->addPriceProductHydrationPlugins($container);
-        $container = $this->provideApiQueryContainer($container);
-        $container = $this->provideApiQueryBuilderQueryContainer($container);
+        $container = $this->provideApiFacade($container);
 
-        return $container;
+        return $this->provideApiQueryBuilderQueryContainer($container);
     }
 
     /**
@@ -91,9 +90,8 @@ class PriceListApiDependencyProvider extends AbstractBundleDependencyProvider
         $container = parent::providePersistenceLayerDependencies($container);
 
         $container = $this->addPriceListPropelQuery($container);
-        $container = $this->addProductAbstractPropelQuery($container);
 
-        return $container;
+        return $this->addProductAbstractPropelQuery($container);
     }
 
     /**
@@ -183,10 +181,10 @@ class PriceListApiDependencyProvider extends AbstractBundleDependencyProvider
      *
      * @return \Spryker\Zed\Kernel\Container
      */
-    protected function provideApiQueryContainer(Container $container): Container
+    protected function provideApiFacade(Container $container): Container
     {
-        $container[static::QUERY_CONTAINER_API] = static function (Container $container) {
-            return new PriceListApiToApiQueryContainerBridge($container->getLocator()->api()->queryContainer());
+        $container[static::FACADE_API] = static function (Container $container) {
+            return new PriceListApiToApiFacadeBridge($container->getLocator()->api()->facade());
         };
 
         return $container;

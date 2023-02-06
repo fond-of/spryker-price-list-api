@@ -283,6 +283,10 @@ class PriceListApi implements PriceListApiInterface
         $query = $this->buildQuery($apiRequestTransfer);
         $collection = $this->transferMapper->toTransferCollection($query->find()->toArray());
 
+        foreach ($collection as $k => $priceListApiTransfer) {
+            $collection[$k] = $this->get($priceListApiTransfer->getIdPriceList());
+        }
+
         $apiCollectionTransfer = $this->apiFacade->createApiCollection($collection);
         $apiCollectionTransfer = $this->addPagination($query, $apiCollectionTransfer, $apiRequestTransfer);
 
